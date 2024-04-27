@@ -122,6 +122,19 @@ if (isSupportedPages()) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (isHomePage()) {
+    // remove the original Bilibili script
+    Array.from(document.head.childNodes).forEach((node) => {
+      if (node.nodeName === 'SCRIPT')
+        document.head.removeChild(node)
+      if (node.nodeName === 'LINK') {
+        const _node = node as HTMLLinkElement
+        _node.href.includes('.js') && _node.href.includes('hdslb.com') && document.head.removeChild(node)
+        _node.href.includes('.css') && _node.href.includes('hdslb.com') && document.head.removeChild(node)
+      }
+    })
+  }
+
   // Remove the original Bilibili homepage if in Bilibili homepage & useOriginalBilibiliHomepage is enabled
   if (!settings.value.useOriginalBilibiliHomepage && isHomePage()) {
     // const originalPageContent = document.querySelector('#i_cecream')
@@ -140,37 +153,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function injectApp() {
   // Inject app when idle
-  runWhenIdle(async () => {
+  // runWhenIdle(async () => {
   // mount component to context window
-    const container = document.createElement('div')
-    container.id = 'bewly'
-    const root = document.createElement('div')
-    const styleEl = document.createElement('link')
-    // Fix #69 https://github.com/hakadao/BewlyBewly/issues/69
-    // https://medium.com/@emilio_martinez/shadow-dom-open-vs-closed-1a8cf286088a - open shadow dom
-    const shadowDOM = container.attachShadow?.({ mode: 'open' }) || container
-    styleEl.setAttribute('rel', 'stylesheet')
-    styleEl.setAttribute('href', browser.runtime.getURL('dist/contentScripts/style.css'))
-    shadowDOM.appendChild(styleEl)
-    shadowDOM.appendChild(root)
-    container.style.opacity = '0'
-    container.style.transition = 'opacity 0.5s'
-    styleEl.onload = () => {
+  const container = document.createElement('div')
+  container.id = 'bewly'
+  const root = document.createElement('div')
+  const styleEl = document.createElement('link')
+  // Fix #69 https://github.com/hakadao/BewlyBewly/issues/69
+  // https://medium.com/@emilio_martinez/shadow-dom-open-vs-closed-1a8cf286088a - open shadow dom
+  const shadowDOM = container.attachShadow?.({ mode: 'open' }) || container
+  styleEl.setAttribute('rel', 'stylesheet')
+  styleEl.setAttribute('href', browser.runtime.getURL('dist/contentScripts/style.css'))
+  shadowDOM.appendChild(styleEl)
+  shadowDOM.appendChild(root)
+  container.style.opacity = '0'
+  container.style.transition = 'opacity 0.5s'
+  styleEl.onload = () => {
     // To prevent abrupt style transitions caused by sudden style changes
-      setTimeout(() => {
-        container.style.opacity = '1'
-      }, 500)
-    }
+    setTimeout(() => {
+      container.style.opacity = '1'
+    }, 500)
+  }
 
-    // inject svg icons
-    const svgDiv = document.createElement('div')
-    svgDiv.innerHTML = SVG_ICONS
-    shadowDOM.appendChild(svgDiv)
+  // inject svg icons
+  const svgDiv = document.createElement('div')
+  svgDiv.innerHTML = SVG_ICONS
+  shadowDOM.appendChild(svgDiv)
 
-    document.body.appendChild(container)
+  document.body.appendChild(container)
 
-    const app = createApp(App)
-    setupApp(app)
-    app.mount(root)
-  })
+  const app = createApp(App)
+  setupApp(app)
+  app.mount(root)
+  // })
 }
