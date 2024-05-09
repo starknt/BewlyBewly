@@ -1,47 +1,12 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import type { VideoCardProps } from './types'
 import { getCSRF, removeHttpFromUrl } from '~/utils/main'
 import { calcCurrentTime, calcTimeSince, numFormatter } from '~/utils/dataFormatter'
 import type { VideoPreviewResult } from '~/models/video/videoPreview'
 import { settings } from '~/logic'
 
-interface Props {
-  id: number
-  duration?: number
-  durationStr?: string
-  title: string
-  desc?: string
-  cover: string
-  author?: string
-  authorFace?: string
-  /** If you set the `authorUrl`, clicking the author's name or avatar will navigate to this url  */
-  authorUrl?: string
-  mid?: number
-  view?: number
-  viewStr?: string
-  danmaku?: number
-  danmakuStr?: string
-  publishedTimestamp?: number
-  capsuleText?: string
-  bvid?: string
-  aid?: number
-  uri?: string
-  /** If you want to show preview video, you should set the cid value */
-  cid?: number
-  epid?: number
-  followed?: boolean
-  horizontal?: boolean
-  tag?: string
-  rank?: number
-  topRightContent?: boolean
-  showPreview?: boolean
-  moreBtn?: boolean
-  moreBtnActive?: boolean
-  removed?: boolean
-  type?: 'horizontal' | 'vertical' | 'bangumi'
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<VideoCardProps>(), {
   topRightContent: true,
   type: 'horizontal',
 })
@@ -175,9 +140,7 @@ function handleUndo() {
 </script>
 
 <template>
-  <div
-    relative
-  >
+  <div>
     <!-- By directly using predefined unocss width properties, it is possible to dynamically set the width attribute -->
     <div hidden w="xl:280px lg:250px md:200px 200px" />
     <div hidden w="full" />
@@ -215,10 +178,10 @@ function handleUndo() {
         </div>
       </div>
     </template>
+
     <div
-      v-else
-      class="video-card group"
-      w="full" pos="absolute top-0 left-0"
+      v-if="!removed && !skeleton"
+      class="video-card group w-full h-full"
       rounded="$bew-radius" duration-300 ease-in-out
       bg="hover:$bew-fill-2 active:$bew-fill-3" hover:ring="8 $bew-fill-2" active:ring="8 $bew-fill-3"
       :style="{ contentVisibility }"
@@ -226,6 +189,7 @@ function handleUndo() {
       <a
         :style="{ display: horizontal ? 'flex' : 'block', gap: horizontal ? '1.5rem' : '0' }"
         :href="videoUrl" target="_blank" rel="noopener noreferrer"
+        :draggable="!settings.enableVideoCtrlBarOnVideoCard"
         @mouseenter="handleMouseEnter"
         @mouseleave="handelMouseLeave"
         @mousedown="switchClickState(true)"
@@ -242,18 +206,20 @@ function handleUndo() {
           group-hover:z-2
         >
           <!-- Video preview -->
-          <Transition v-if="showPreview && settings.enableVideoPreview" name="fade">
+          <div v-if="showPreview && settings.enableVideoPreview">
             <video
               v-if="previewVideoUrl && isHover"
               autoplay muted
               :controls="settings.enableVideoCtrlBarOnVideoCard"
               :style="{ pointerEvents: settings.enableVideoCtrlBarOnVideoCard ? 'auto' : 'none' }"
-              pos="absolute top-0 left-0" w-full aspect-video rounded="$bew-radius" bg-black
+              w-full aspect-video rounded="$bew-radius" bg-black
+              draggable="false"
+              @dragstart="(e) => settings.enableVideoCtrlBarOnVideoCard && isHover && e.stopPropagation()"
               @mouseenter="handleMouseEnter"
             >
               <source :src="previewVideoUrl" type="video/mp4">
             </video>
-          </Transition>
+          </div>
           <!-- <video  /> -->
           <!-- style="--un-shadow: 0 0 0 4px var(--bew-theme-color)" -->
           <!-- group-hover:transform="translate--4px" -->
@@ -324,13 +290,11 @@ function handleUndo() {
           </button>
 
           <!-- Video cover -->
-          <img
-            :src="`${removeHttpFromUrl(cover)}@672w_378h_1c`"
-            loading="lazy"
-            w="full" max-w-full align-middle aspect-video
-            bg="cover center"
-            rounded="$bew-radius"
-          >
+          <picture v-show="!isHover || !settings.enableVideoPreview" draggable="false">
+            <source :srcset="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover.avif'" type="image/avif">
+            <source :srcset="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover.webp'" type="image/webp">
+            <img :src="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover'" loading="eager" class="w-full max-w-full min-h-196px align-middle aspect-video" bg="cover center" rounded="$bew-radius">
+          </picture>
         </div>
 
         <!-- Other Information -->
@@ -373,7 +337,7 @@ function handleUndo() {
           <div class="group/desc" flex="~ col" w="full" align="items-start">
             <div flex="~ gap-1 justify-between items-start" w="full" pos="relative">
               <h3
-                class="keep-two-lines"
+                class="keep-two-lines transform-translate-z-0"
                 text="lg overflow-ellipsis $bew-text-1"
                 cursor="pointer"
               >
@@ -481,68 +445,7 @@ function handleUndo() {
     </div>
 
     <!-- skeleton -->
-    <template v-if="!horizontal">
-      <div
-        block mb-4 pointer-events-none select-none invisible
-      >
-        <!-- Cover -->
-        <div w-full shrink-0 aspect-video h-fit rounded="$bew-radius" />
-        <!-- Other Information -->
-        <div
-          mt-4 flex="~ gap-4"
-        >
-          <div
-            block w="36px" h="36px" rounded="1/2" shrink-0
-          />
-          <div w-full>
-            <div grid gap-2>
-              <div w-full h-5 />
-              <div w="3/4" h-5 />
-            </div>
-            <div grid gap-2 mt-4>
-              <div w="40%" h-4 />
-              <div w="80%" h-4 />
-            </div>
-            <div mt-2 flex>
-              <div text="transparent sm" inline-block p="x-2" h-7 rounded-4>
-                hello world
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
-    <template v-else>
-      <div
-        flex="~ gap-6"
-        mb-4 pointer-events-none select-none invisible
-      >
-        <!-- Cover -->
-        <div
-          :w="wValue"
-          shrink-0 aspect-video h-fit rounded="$bew-radius"
-        />
-        <!-- Other Information -->
-        <div
-          w-full flex="~ gap-4"
-        >
-          <div w-full>
-            <div grid gap-2>
-              <div w-full h-5 />
-              <div w="3/4" h-5 />
-            </div>
-            <div grid gap-2 mt-4>
-              <div w="70%" h-4 />
-            </div>
-            <div mt-4 flex>
-              <div text="transparent sm" inline-block p="x-2" h-7 rounded-4>
-                hello world
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
+    <VideoCardSkeleton v-if="skeleton && !removed" :horizontal="horizontal" />
   </div>
 </template>
 
