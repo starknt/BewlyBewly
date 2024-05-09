@@ -1,7 +1,7 @@
 interface BewlyProfileCardProvider {
   hasCacheUserProfile: (mid: number) => boolean
-  openUserProfile: (mid: number, e: MouseEvent) => void
-  closeUserProfile: (mid?: number) => void
+  openUserProfile: (mid: number, e: MouseEvent, rid: number) => void
+  closeUserProfile: (rid?: number) => void
 }
 
 export function useProfileCard(): BewlyProfileCardProvider {

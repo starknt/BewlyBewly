@@ -25,13 +25,15 @@ const toast = useToast()
 
 const store = new Map<number, ProfileCardInfo | null>()
 const mid = ref<number>()
+const rid = ref<number>()
 const info = ref<ProfileCardInfo>()
 const action = ref<'open' | 'close'>()
 const timer = ref()
 const isHover = useElementHover(target)
 
-async function openUserProfile(_mid: number, e: MouseEvent) {
+async function openUserProfile(_mid: number, e: MouseEvent, _rid: number) {
   if (target.style.display === 'block') {
+    clearTimeout(timer.value)
     target.style.left = `${e.clientX + 30}px`
     target.style.top = `${e.clientY - 120}px`
     action.value = 'open'
@@ -52,10 +54,11 @@ async function openUserProfile(_mid: number, e: MouseEvent) {
     target.style.top = `${e.clientY - 120}px`
     target.style.zIndex = '9999'
   }
+  rid.value = _rid
 }
 
-function closeUserProfile(_mid?: number) {
-  if (_mid && mid.value !== _mid)
+function closeUserProfile(_rid?: number) {
+  if (rid.value && rid.value !== _rid)
     return
 
   target.style.display = isHover.value ? 'block' : 'none'
@@ -119,11 +122,11 @@ provide('BEWLY_USER_PROFILE', {
   closeUserProfile,
 })
 
-watch(isHover, (isHover) => {
-  if (isHover || action.value === 'open')
+watch([isHover, action], ([isHover, action]) => {
+  if (isHover || action === 'open')
     clearTimeout(timer.value)
 
-  if (!isHover && action.value === 'close')
+  if (!isHover && action === 'close')
     timer.value = setTimeout(() => closeUserProfile(), 1200)
 })
 </script>

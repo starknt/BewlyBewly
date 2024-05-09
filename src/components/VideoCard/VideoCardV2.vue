@@ -20,14 +20,17 @@ const api = useApiClient()
 const p = useProfileCard()
 const warperEl = ref<HTMLElement>()
 const previewEl = ref<HTMLElement>()
+const rid = ref<number>()
 const avatarEl = useDelayedHover({
   enter: (e) => {
-    if (props.mid)
-      p.openUserProfile(props.mid, e)
+    if (props.mid) {
+      rid.value = useId()
+      p.openUserProfile(props.mid, e, rid.value)
+    }
   },
   leave: () => {
     if (props.mid)
-      p.closeUserProfile(props.mid)
+      p.closeUserProfile(rid.value)
   },
   leaveDelay: 1200,
 })
