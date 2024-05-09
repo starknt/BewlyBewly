@@ -12,7 +12,6 @@ import AutoImport from 'unplugin-auto-import/vite'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import UnoCSS from 'unocss/vite'
 import { isDev, isFirefox, port, r } from './scripts/utils'
-import { MV3Hmr } from './vite-mv3-hmr'
 
 export const sharedConfig: UserConfig = {
   root: r('src'),
@@ -69,7 +68,6 @@ export const sharedConfig: UserConfig = {
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
       '__VUE_OPTIONS_API__': JSON.stringify(true),
       '__VUE_PROD_DEVTOOLS__': JSON.stringify(false),
-      'preventAssignment': true,
     }),
 
     // rewrite assets to use relative path
@@ -117,12 +115,9 @@ export default defineConfig(({ command }) => ({
         popup: r('src/popup/index.html'),
       },
     },
-    minify: 'terser',
   },
   plugins: [
     ...sharedConfig.plugins!,
-
-    MV3Hmr(),
   ],
   test: {
     globals: true,
