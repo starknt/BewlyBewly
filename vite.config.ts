@@ -4,7 +4,6 @@ import { dirname, relative } from 'node:path'
 import type { UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
-import replace from '@rollup/plugin-replace'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/vite'
@@ -63,13 +62,6 @@ export const sharedConfig: UserConfig = {
     // https://github.com/unocss/unocss
     UnoCSS(),
 
-    replace({
-      '__DEV__': JSON.stringify(isDev),
-      'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
-      '__VUE_OPTIONS_API__': JSON.stringify(true),
-      '__VUE_PROD_DEVTOOLS__': JSON.stringify(false),
-    }),
-
     // rewrite assets to use relative path
     {
       name: 'assets-rewrite',
@@ -80,6 +72,14 @@ export const sharedConfig: UserConfig = {
       },
     },
   ],
+
+  define: {
+    '__DEV__': JSON.stringify(isDev),
+    'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
+    '__VUE_OPTIONS_API__': JSON.stringify(true),
+    '__VUE_PROD_DEVTOOLS__': JSON.stringify(false),
+  },
+
   optimizeDeps: {
     include: [
       'vue',
