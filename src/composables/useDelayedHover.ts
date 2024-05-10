@@ -10,6 +10,8 @@ export function useDelayedHover({ enterDelay = 250, leaveDelay = 310, beforeEnte
   let leaveTimer: any | undefined
 
   function handleMouseEnter(e: MouseEvent) {
+    // @ts-expect-error ignore
+    e._target = el.value
     if (beforeEnter)
       beforeEnter(e)
 
@@ -26,6 +28,8 @@ export function useDelayedHover({ enterDelay = 250, leaveDelay = 310, beforeEnte
     }, enterDelay)
   }
   function handleMouseLeave(e: MouseEvent) {
+    // @ts-expect-error ignore
+    e._target = el.value
     if (beforeLeave)
       beforeLeave(e)
 

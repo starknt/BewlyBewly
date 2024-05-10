@@ -25,15 +25,16 @@ const avatarEl = useDelayedHover({
   enter: (e) => {
     if (props.mid) {
       rid.value = useId()
-      p.openUserProfile(props.mid, e, rid.value)
+      p.open(props.mid, e, rid.value)
     }
   },
   leave: () => {
     if (props.mid)
-      p.closeUserProfile(rid.value)
+      p.close(rid.value)
   },
-  leaveDelay: 1200,
+  leaveDelay: 1000,
 })
+
 const previewVideoUrl = ref<string>()
 const isInWatchLater = ref(false)
 
@@ -170,11 +171,11 @@ watch(isHoverPreviewEl, (isHover) => {
       <div v-if="!removed" flex="~ gap-x-4" class="p2 pt-0 group">
         <!-- avatar -->
         <a
+          ref="avatarEl"
           :href="authorUrl" target="_blank" rel="noopener noreferrer"
           class="size-36px relative rounded-full object-cover cursor-pointer"
         >
           <img
-            ref="avatarEl"
             :src="`${removeHttpFromUrl(authorFace!)}@50w_50h_1c`"
             class="rounded-full object-cover size-36px"
             loading="lazy"

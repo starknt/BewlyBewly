@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { useElementHover } from '@vueuse/core'
+import { useElementBounding, useElementHover } from '@vueuse/core'
 import { useToast } from 'vue-toastification'
 import type { ProfileCardInfo, ProfileCardInfoResult } from '~/models/user/card'
 import { numFormatter } from '~/utils/dataFormatter'
@@ -31,11 +31,17 @@ const action = ref<'open' | 'close'>()
 const timer = ref()
 const isHover = useElementHover(target)
 
-async function openUserProfile(_mid: number, e: MouseEvent, _rid: number) {
+async function open(_mid: number, e: MouseEvent, _rid: number) {
+  // @ts-expect-error: ignore
+  const _target = e._target as HTMLDivElement
+  const { top, left } = _target.getBoundingClientRect()
+  const { offsetWidth, offsetHeight } = _target
+  const centerX = left + (offsetWidth / 2)
+  const centerY = top + (offsetHeight / 2)
   if (target.style.display === 'block') {
     clearTimeout(timer.value)
-    target.style.left = `${e.clientX + 30}px`
-    target.style.top = `${e.clientY - 120}px`
+    target.style.left = `${centerX}px`
+    target.style.top = `${centerY}px`
     action.value = 'open'
     store.set(_mid, null)
     const _info = await fetchUserProfile(_mid)
@@ -50,14 +56,14 @@ async function openUserProfile(_mid: number, e: MouseEvent, _rid: number) {
     mid.value = _mid
 
     target.style.display = 'block'
-    target.style.left = `${e.clientX + 30}px`
-    target.style.top = `${e.clientY - 120}px`
+    target.style.left = `${centerX}px`
+    target.style.top = `${centerY}px`
     target.style.zIndex = '9999'
   }
   rid.value = _rid
 }
 
-function closeUserProfile(_rid?: number) {
+function close(_rid?: number) {
   if (rid.value && rid.value !== _rid)
     return
 
@@ -115,11 +121,8 @@ onUnmounted(() => {
 })
 
 provide('BEWLY_USER_PROFILE', {
-  hasCacheUserProfile(mid: number) {
-    return store.has(mid)
-  },
-  openUserProfile,
-  closeUserProfile,
+  open,
+  close,
 })
 
 watch([isHover, action], ([isHover, action]) => {
@@ -127,7 +130,7 @@ watch([isHover, action], ([isHover, action]) => {
     clearTimeout(timer.value)
 
   if (!isHover && action === 'close')
-    timer.value = setTimeout(() => closeUserProfile(), 1200)
+    timer.value = setTimeout(() => close(), 1000)
 })
 </script>
 
