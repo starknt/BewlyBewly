@@ -1,5 +1,5 @@
 interface BewlyProfileCardProvider {
-  open: (mid: number, e: MouseEvent, rid: number) => void
+  open: (mid: number, t: HTMLElement) => void
   close: (rid?: number) => void
 }
 

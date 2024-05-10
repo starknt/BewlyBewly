@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useElementHover } from '@vueuse/core'
+import { useElementHover, useEventListener } from '@vueuse/core'
 import type { VideoCardProps } from './types'
 import { calcTimeSince, numFormatter } from '~/utils/dataFormatter'
 import { getCSRF, removeHttpFromUrl } from '~/utils/main'
@@ -20,19 +20,15 @@ const api = useApiClient()
 const p = useProfileCard()
 const warperEl = ref<HTMLElement>()
 const previewEl = ref<HTMLElement>()
-const rid = ref<number>()
-const avatarEl = useDelayedHover({
-  enter: (e) => {
-    if (props.mid) {
-      rid.value = useId()
-      p.open(props.mid, e, rid.value)
-    }
-  },
-  leave: () => {
-    if (props.mid)
-      p.close(rid.value)
-  },
-  leaveDelay: 1000,
+const avatarEl = ref<HTMLElement>()
+let rid: number | undefined
+useEventListener(avatarEl, 'mouseenter', () => {
+  if (!rid)
+    rid = useId()
+  p.open(props.mid!, avatarEl.value!)
+})
+useEventListener(avatarEl, 'mouseleave', () => {
+  p.close(rid)
 })
 
 const previewVideoUrl = ref<string>()
@@ -137,7 +133,7 @@ watch(isHoverPreviewEl, (isHover) => {
 
           <!-- watch later -->
           <div pos="absolute top-3 right-3" class="op-0 group-hover:op-100 z-1000">
-            <Button circle size="small" class="flex justify-center items-center" @click.prevent="toggleWatchLater">
+            <Button :title="isInWatchLater ? $t('common.added') : $t('common.save_to_watch_later')" circle size="small" class="flex justify-center items-center" @click.prevent="toggleWatchLater">
               <i v-if="isInWatchLater" class="i-line-md:confirm" />
               <i v-else class="i-mingcute:carplay-line" />
             </Button>

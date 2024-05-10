@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@types/md5": "^2.3.5",
+    "dom-align": "^1.12.4",
     "dplayer": "^1.27.1",
     "md5": "^2.3.0",
     "mitt": "^3.0.1",

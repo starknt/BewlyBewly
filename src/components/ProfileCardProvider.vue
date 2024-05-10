@@ -1,5 +1,6 @@
 <script setup lang="tsx">
-import { useElementBounding, useElementHover } from '@vueuse/core'
+import * as DOMAlign from 'dom-align'
+import { useElementHover } from '@vueuse/core'
 import { useToast } from 'vue-toastification'
 import type { ProfileCardInfo, ProfileCardInfoResult } from '~/models/user/card'
 import { numFormatter } from '~/utils/dataFormatter'
@@ -15,60 +16,70 @@ enum Action {
   RemoveFans = 7,
 }
 
-const target = document.createElement('div')
-target.id = 'bewly-user-profile'
-target.style.display = 'none'
-document.body.appendChild(target)
+type Direction = 't' | 'b' | 'c' | 'l' | 'r'
+
+interface DOMAlignConfig {
+  points?: [`${Direction}${Direction}`, `${Direction}${Direction}`] | [`${Direction}${Direction}`]
+  offset?: [number, number]
+  targetOffset?: [string, string]
+  overflow?: {
+    adjustX?: boolean
+    adjustY?: boolean
+    alwaysByViewport?: boolean
+  }
+  useCssTransform?: boolean
+}
+
+const config: DOMAlignConfig = {
+  points: ['cl'],
+  offset: [25, 0],
+  overflow: { adjustX: true, adjustY: true, alwaysByViewport: true },
+  useCssTransform: false,
+}
+
+const source = document.createElement('div')
+source.id = 'bewly-user-profile'
+source.style.display = 'none'
+source.style.zIndex = '2002'
+document.body.appendChild(source)
 
 const api = useApiClient()
 const toast = useToast()
 
 const store = new Map<number, ProfileCardInfo | null>()
 const mid = ref<number>()
-const rid = ref<number>()
 const info = ref<ProfileCardInfo>()
-const action = ref<'open' | 'close'>()
-const timer = ref()
-const isHover = useElementHover(target)
+const isHover = useElementHover(source)
+const queue = ref(new Map<number, number>())
 
-async function open(_mid: number, e: MouseEvent, _rid: number) {
-  // @ts-expect-error: ignore
-  const _target = e._target as HTMLDivElement
-  const { top, left } = _target.getBoundingClientRect()
-  const { offsetWidth, offsetHeight } = _target
-  const centerX = left + (offsetWidth / 2)
-  const centerY = top + (offsetHeight / 2)
-  if (target.style.display === 'block') {
-    clearTimeout(timer.value)
-    target.style.left = `${centerX}px`
-    target.style.top = `${centerY}px`
-    action.value = 'open'
-    store.set(_mid, null)
-    const _info = await fetchUserProfile(_mid)
-    info.value = _info
-    mid.value = _mid
-  }
-  else {
-    action.value = 'open'
-    store.set(_mid, null)
-    const _info = await fetchUserProfile(_mid)
-    info.value = _info
-    mid.value = _mid
+async function open(_mid: number, t: HTMLElement) {
+  queue.value.clear()
 
-    target.style.display = 'block'
-    target.style.left = `${centerX}px`
-    target.style.top = `${centerY}px`
-    target.style.zIndex = '9999'
-  }
-  rid.value = _rid
+  const b = t.getBoundingClientRect()
+  const centerX = b.left + (b.width / 2)
+  const centerY = b.top + (b.height / 2)
+  store.set(_mid, null)
+  const _info = await fetchUserProfile(_mid)
+  info.value = _info
+  mid.value = _mid
+  source.style.display = 'block'
+  DOMAlign.alignPoint(source, { clientX: centerX, clientY: centerY }, config)
 }
 
-function close(_rid?: number) {
-  if (rid.value && rid.value !== _rid)
-    return
+function close(rid: number) {
+  queue.value.clear()
 
-  target.style.display = isHover.value ? 'block' : 'none'
-  action.value = 'close'
+  if (queue.value.has(rid))
+    return queue.value.set(rid, Date.now())
+
+  // create close request
+  setTimeout(() => {
+    queue.value.set(rid, Date.now())
+  }, 1000)
+}
+
+function doClose() {
+  source.style.display = 'none'
 }
 
 function fetchUserProfile(mid: number) {
@@ -117,26 +128,30 @@ function handleFollow(_info: ProfileCardInfo) {
 }
 
 onUnmounted(() => {
-  target.remove()
+  source.remove()
+})
+
+watchPostEffect(() => {
+  queue.value.forEach((t, k) => {
+    if (isHover.value)
+      return queue.value.set(k, Date.now())
+
+    if (t + 1000 > Date.now()) {
+      // 执行关闭动作
+      doClose()
+    }
+  })
 })
 
 provide('BEWLY_USER_PROFILE', {
   open,
   close,
 })
-
-watch([isHover, action], ([isHover, action]) => {
-  if (isHover || action === 'open')
-    clearTimeout(timer.value)
-
-  if (!isHover && action === 'close')
-    timer.value = setTimeout(() => close(), 1000)
-})
 </script>
 
 <template>
   <div>
-    <Teleport :to="target">
+    <Teleport :to="source">
       <div v-if="info" class="content" flex="~ col">
         <div class="background" :style="{ backgroundImage: `url(${info.space.l_img})` }" />
 
@@ -201,7 +216,7 @@ watch([isHover, action], ([isHover, action]) => {
   --at-apply: antialiased text-$text3;
   --at-apply: fixed rounded-$bew-radius z-2000;
   --at-apply: bg-$bew-elevated-1 shadow-[0_5px_10px_0_rgba(0,0,0,0.15)];
-  --at-apply: transition-all duration-200 will-change-left will-change-top;
+  --at-apply: transform-origin-c transition-all duration-200;
   backdrop-filter: var(--bew-filter-glass-2);
 }
 
