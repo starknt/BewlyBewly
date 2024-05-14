@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onKeyStroke } from '@vueuse/core'
+
 import type { HistoryItem, SuggestionItem, SuggestionResponse } from './searchHistoryProvider'
 import {
   addSearchHistory,
@@ -7,6 +8,8 @@ import {
   getSearchHistory,
   removeSearchHistory,
 } from './searchHistoryProvider'
+import { useApiClient } from '~/composables/api'
+import { useBewlyImage } from '~/composables/useImage'
 import { findLeafActiveElement } from '~/utils/element'
 
 defineProps<{
@@ -222,7 +225,7 @@ async function handleClearSearchHistory() {
         flex="~ items-center justify-between"
         @click="keyword = ''"
       >
-        <ic-baseline-clear shrink-0 />
+        <div i-ic-baseline-clear shrink-0 />
       </button>
 
       <button
@@ -238,7 +241,7 @@ async function handleClearSearchHistory() {
         style="--un-drop-shadow: drop-shadow(0 0 6px var(--bew-theme-color))"
         @click="navigateToSearchResultPage(keyword)"
       >
-        <tabler:search block align-middle />
+        <div i-tabler:search block align-middle />
       </button>
     </div>
 
@@ -273,7 +276,7 @@ async function handleClearSearchHistory() {
                 pos="absolute top-0 right-0" scale-80 opacity-0 group-hover:opacity-100
                 @click.stop="handleDelete(item.value)"
               >
-                <ic-baseline-clear />
+                <div i-ic-baseline-clear />
               </button>
             </div>
           </div>

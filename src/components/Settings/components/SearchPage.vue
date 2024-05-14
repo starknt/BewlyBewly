@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+import SettingsItem from './SettingsItem.vue'
+import SettingsItemGroup from './SettingsItemGroup.vue'
+import Input from '~/components/Input.vue'
+import Radio from '~/components/Radio.vue'
+import Slider from '~/components/Slider.vue'
+import Tooltip from '~/components/Tooltip.vue'
+import { useBewlyImage } from '~/composables/useImage'
 import { settings } from '~/logic'
 
 const { searchBarCharacters, wallpapers, getBewlyImage } = useBewlyImage()
@@ -80,7 +87,7 @@ function changeWallpaper(url: string) {
             :class="{ 'selected-wallpaper': settings.searchPageSearchBarFocusCharacter === '' }"
             @click="changeSearchBarFocusCharacter('')"
           >
-            <tabler:photo-off text="3xl $bew-text-3" />
+            <div i-tabler:photo-off text="3xl $bew-text-3" />
           </picture>
           <Tooltip v-for="item in searchBarCharacters" :key="item.url" placement="top" :content="item.name" aspect-square>
             <picture
@@ -142,7 +149,7 @@ function changeWallpaper(url: string) {
               :class="{ 'selected-wallpaper': settings.searchPageWallpaper === '' }"
               @click="changeWallpaper('')"
             >
-              <tabler:photo-off text="3xl $bew-text-3" />
+              <div i-tabler:photo-off text="3xl $bew-text-3" />
             </picture>
             <Tooltip v-for="item in wallpapers" :key="item.url" placement="top" :content="item.name" aspect-video>
               <picture

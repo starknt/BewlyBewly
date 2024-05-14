@@ -1,12 +1,18 @@
 <script lang="ts" setup>
-import type { Ref } from 'vue'
 import QRCodeVue from 'qrcode.vue'
+import type { Ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import draggable from 'vuedraggable'
+
+import ChildSettingsDialog from './ChildSettingsDialog.vue'
 import SearchPage from './SearchPage.vue'
-import { getTVLoginQRCode, pollTVLoginQRCode, revokeAccessKey } from '~/utils/authProvider'
+import SettingsItem from './SettingsItem.vue'
+import SettingsItemGroup from './SettingsItemGroup.vue'
+import Button from '~/components/Button.vue'
+import Radio from '~/components/Radio.vue'
 import { accessKey, settings } from '~/logic'
 import { useMainStore } from '~/stores/mainStore'
+import { getTVLoginQRCode, pollTVLoginQRCode, revokeAccessKey } from '~/utils/authProvider'
 
 const mainStore = useMainStore()
 const toast = useToast()
@@ -184,7 +190,7 @@ function handleToggleHomeTab(tab: any) {
           <div mt-4 bg-white border="white 4">
             <QRCodeVue v-if="loginQRCodeUrl" :value="loginQRCodeUrl" :size="150" />
             <div v-else w-150px h-150px grid="~ place-items-center">
-              <svg-spinners:ring-resize />
+              <div i-svg-spinners:ring-resize />
             </div>
           </div>
 
@@ -208,7 +214,7 @@ function handleToggleHomeTab(tab: any) {
             {{ $t('settings.home_tabs_adjustment') }}
             <Button size="small" type="secondary" @click="resetHomeTabs">
               <template #left>
-                <mingcute:back-line />
+                <div i-mingcute:back-line />
               </template>
               {{ $t('common.reset') }}
             </Button>

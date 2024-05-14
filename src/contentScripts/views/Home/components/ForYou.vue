@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
 import { onKeyStroke } from '@vueuse/core'
+import type { Ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { Type as ThreePointV2Type } from '~/models/video/appForYou'
 import type { AppForYouResult, Item as AppVideoItem, ThreePointV2 } from '~/models/video/appForYou'
-import type { Item as WebVideoItem, forYouResult } from '~/models/video/forYou'
+import type { Item as VideoItem, Item as WebVideoItem, forYouResult } from '~/models/video/forYou'
 import type { GridLayout } from '~/logic'
 import { accessKey, settings } from '~/logic'
-import { LanguageType } from '~/enums/appEnums'
 import { TVAppKey, getTvSign } from '~/utils/authProvider'
 import { isVerticalVideo } from '~/utils/uriParse'
 import { getLastElement } from '~/utils/array'
@@ -535,7 +534,7 @@ watch(() => settings.value.recommendationMode, (mode, oldMode) => {
             </div>
             {{ reason.name }}
           </div>
-          <line-md:confirm v-if="selectedDislikeReason === reason.id" />
+          <div v-if="selectedDislikeReason === reason.id" i-line-md:confirm />
         </li>
       </ul>
     </Dialog>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
+import Tooltip from '../Tooltip.vue'
 import type { HoveringDockItem } from './types'
+import { useDark } from '~/composables/useDark'
 import { AppPage } from '~/enums/appEnums'
 import { settings } from '~/logic'
 import type { DockItem } from '~/stores/mainStore'
@@ -111,13 +112,15 @@ function toggleDockHide(hide: boolean) {
             :class="{ active: activatedPage === dockItem.page }"
             @click="emit('change-page', dockItem.page)"
           >
-            <Icon
+            <div
               v-show="activatedPage !== dockItem.page"
-              :icon="dockItem.icon"
+              :class="dockItem.icon"
+              text-xl
             />
-            <Icon
+            <div
               v-show="activatedPage === dockItem.page"
-              :icon="dockItem.iconActivated"
+              :class="dockItem.iconActivated"
+              text-xl
             />
           </button>
         </Tooltip>
@@ -135,14 +138,14 @@ function toggleDockHide(hide: boolean) {
         >
           <Transition name="fade">
             <div v-show="hoveringDockItem.themeMode" absolute>
-              <line-md:sunny-outline-to-moon-loop-transition v-if="isDark" />
-              <line-md:moon-alt-to-sunny-outline-loop-transition v-else />
+              <div v-if="isDark" i-line-md:sunny-outline-to-moon-loop-transition text-xl />
+              <div v-else i-line-md:moon-alt-to-sunny-outline-loop-transition text-xl />
             </div>
           </Transition>
           <Transition name="fade">
             <div v-show="!hoveringDockItem.themeMode" absolute>
-              <line-md:sunny-outline-to-moon-transition v-if="isDark" />
-              <line-md:moon-to-sunny-outline-transition v-else />
+              <div v-if="isDark" i-line-md:sunny-outline-to-moon-transition text-xl />
+              <div v-else i-line-md:moon-to-sunny-outline-transition text-xl />
             </div>
           </Transition>
         </button>
@@ -150,7 +153,7 @@ function toggleDockHide(hide: boolean) {
 
       <Tooltip :content="$t('dock.settings')" :placement="tooltipPlacement">
         <button class="dock-item" @click="emit('settings-visibility-change')">
-          <mingcute:settings-3-line />
+          <div i-mingcute:settings-3-line text-xl />
         </button>
       </Tooltip>
     </div>

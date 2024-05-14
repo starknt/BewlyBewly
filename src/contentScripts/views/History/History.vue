@@ -2,11 +2,16 @@
 import { useDateFormat } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
-import { getCSRF, removeHttpFromUrl } from '~/utils/main'
-import { calcCurrentTime } from '~/utils/dataFormatter'
-import { Business } from '~/models/history/history'
+import Button from '~/components/Button.vue'
+import Empty from '~/components/Empty.vue'
+import Progress from '~/components/Progress.vue'
+import { useApiClient } from '~/composables/api'
+import { useBewlyApp } from '~/composables/useAppProvider'
 import type { List as HistoryItem, HistoryResult } from '~/models/history/history'
+import { Business } from '~/models/history/history'
 import type { List as HistorySearchItem, HistorySearchResult } from '~/models/video/historySearch'
+import { calcCurrentTime } from '~/utils/dataFormatter'
+import { getCSRF, removeHttpFromUrl } from '~/utils/main'
 
 const { t } = useI18n()
 const api = useApiClient()
@@ -414,7 +419,7 @@ function jumpToLoginPage() {
                     items-center
                     gap-1
                     m="l-2"
-                  ><tabler:live-photo />
+                  ><div i-tabler:live-photo />
                     Live
                   </span>
                 </a>
@@ -434,7 +439,7 @@ function jumpToLoginPage() {
                 duration-300
                 @click.prevent="deleteHistoryItem(index, historyItem)"
               >
-                <tabler:trash />
+                <div i-tabler:trash />
               </button>
             </div>
           </section>
@@ -476,7 +481,7 @@ function jumpToLoginPage() {
           @click="handleClearAllWatchHistory"
         >
           <template #left>
-            <tabler:trash />
+            <div i-tabler:trash />
           </template>
           {{ $t('history.clear_all_watch_history') }}
         </Button>
@@ -489,7 +494,7 @@ function jumpToLoginPage() {
           @click="handlePauseWatchHistory"
         >
           <template #left>
-            <ph:pause-circle-bold />
+            <div i-ph:pause-circle-bold />
           </template>
           {{ $t('history.pause_watch_history') }}
         </Button>
@@ -502,7 +507,7 @@ function jumpToLoginPage() {
           @click="handleTurnOnWatchHistory"
         >
           <template #left>
-            <ph:play-circle-bold />
+            <div i-ph:play-circle-bold />
           </template>
           {{ $t('history.turn_on_watch_history') }}
         </Button>

@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import AnimeTimeTable from './components/AnimeTimeTable.vue'
-import { getUserID, openLinkToNewTab } from '~/utils/main'
-import { numFormatter } from '~/utils/dataFormatter'
-import type { List as WatchListItem, WatchListResult } from '~/models/anime/watchList'
+import Button from '~/components/Button.vue'
+import Empty from '~/components/Empty.vue'
+import HorizontalScrollView from '~/components/HorizontalScrollView.vue'
+import LongCoverCard from '~/components/LongCoverCard/LongCoverCard.vue'
+import LongCoverCardSkeleton from '~/components/LongCoverCard/LongCoverCardSkeleton.vue'
+import { useApiClient } from '~/composables/api'
+import { useBewlyApp } from '~/composables/useAppProvider'
 import type { List as PopularAnimeItem, PopularAnimeResult } from '~/models/anime/popular'
 import type { ItemSubItem as RecommendationItem, RecommendationResult } from '~/models/anime/recommendation'
+import type { List as WatchListItem, WatchListResult } from '~/models/anime/watchList'
+import { numFormatter } from '~/utils/dataFormatter'
+import { getUserID, openLinkToNewTab } from '~/utils/main'
 
 const api = useApiClient()
 const animeWatchList = reactive<WatchListItem[]>([])

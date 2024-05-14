@@ -1,7 +1,12 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import draggable from 'vuedraggable'
-import { Icon } from '@iconify/vue'
+
+import SettingsItem from './SettingsItem.vue'
+import SettingsItemGroup from './SettingsItemGroup.vue'
+import Button from '~/components/Button.vue'
+import Radio from '~/components/Radio.vue'
+import Select from '~/components/Select.vue'
 import { settings } from '~/logic'
 import { useMainStore } from '~/stores/mainStore'
 
@@ -171,7 +176,7 @@ function handleToggleDockItem(dockItem: any) {
             {{ $t('settings.dock_content_adjustment') }}
             <Button size="small" type="secondary" @click="resetDockContent">
               <template #left>
-                <mingcute:back-line />
+                <div i-mingcute:back-line />
               </template>
               {{ $t('common.reset') }}
             </Button>
@@ -192,7 +197,7 @@ function handleToggleDockItem(dockItem: any) {
               }"
               @click="handleToggleDockItem(element)"
             >
-              <Icon :icon="pageOptions.find((page:any) => (page.value === element.page))?.icon as string" />
+              <div :class="pageOptions.find((page:any) => (page.value === element.page))?.icon as string" />
               {{ pageOptions.find(option => option.value === element.page)?.label }}
             </div>
           </template>

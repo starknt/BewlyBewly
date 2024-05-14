@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import Tooltip from '../Tooltip.vue'
 import type { HoveringDockItem } from './types'
+import Button from '~/components/Button.vue'
+import { useDark } from '~/composables/useDark'
 
 const emit = defineEmits(['settings-visibility-change'])
 const { isDark, toggleDark } = useDark()
@@ -27,14 +30,14 @@ const hoveringDockItem = reactive<HoveringDockItem>({
         >
           <Transition name="fade">
             <div v-show="hoveringDockItem.themeMode" absolute>
-              <line-md:sunny-outline-to-moon-loop-transition v-if="isDark" />
-              <line-md:moon-alt-to-sunny-outline-loop-transition v-else />
+              <div v-if="isDark" i-line-md:sunny-outline-to-moon-loop-transition text-xl />
+              <div v-else i-line-md:moon-alt-to-sunny-outline-loop-transition text-xl />
             </div>
           </Transition>
           <Transition name="fade">
             <div v-show="!hoveringDockItem.themeMode" absolute>
-              <line-md:sunny-outline-to-moon-transition v-if="isDark" />
-              <line-md:moon-to-sunny-outline-transition v-else />
+              <div v-if="isDark" i-line-md:sunny-outline-to-moon-transition text-xl />
+              <div v-else i-line-md:moon-to-sunny-outline-transition text-xl />
             </div>
           </Transition>
         </Button>
@@ -46,7 +49,9 @@ const hoveringDockItem = reactive<HoveringDockItem>({
           center size="small" round
           @click="emit('settings-visibility-change')"
         >
-          <mingcute:settings-3-line />
+          <div>
+            <div i-mingcute:settings-3-line text-xl />
+          </div>
         </Button>
       </Tooltip>
     </div>

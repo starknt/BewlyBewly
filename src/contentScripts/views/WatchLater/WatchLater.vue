@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { useDateFormat } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { getCSRF, openLinkToNewTab, removeHttpFromUrl } from '~/utils/main'
-import { calcCurrentTime } from '~/utils/dataFormatter'
+
+import Button from '~/components/Button.vue'
+import Empty from '~/components/Empty.vue'
+import Progress from '~/components/Progress.vue'
+import { useApiClient } from '~/composables/api'
+import { useBewlyApp } from '~/composables/useAppProvider'
 import type { List as VideoItem, WatchLaterResult } from '~/models/video/watchLater'
+import { calcCurrentTime } from '~/utils/dataFormatter'
+import { getCSRF, openLinkToNewTab, removeHttpFromUrl } from '~/utils/main'
 
 const { t } = useI18n()
 const api = useApiClient()
@@ -234,7 +240,7 @@ function jumpToLoginPage() {
                     duration-300
                     @click.prevent="deleteWatchLaterItem(index, item.aid)"
                   >
-                    <tabler:trash />
+                    <div i-tabler:trash />
                   </button>
                 </div>
 
@@ -292,7 +298,7 @@ function jumpToLoginPage() {
             @click="handlePlayAll"
           >
             <template #left>
-              <tabler:player-play />
+              <div i-tabler:player-play />
             </template>
             {{ t('common.play_all') }}
           </Button>
@@ -301,7 +307,7 @@ function jumpToLoginPage() {
             @click="handleClearAllWatchLater"
           >
             <template #left>
-              <tabler:trash />
+              <div i-tabler:trash />
             </template>
             {{ t('watch_later.clear_all') }}
           </Button>
@@ -310,7 +316,7 @@ function jumpToLoginPage() {
             @click="handleRemoveWatchedVideos"
           >
             <template #left>
-              <tabler:circle-minus />
+              <div i-tabler:circle-minus />
             </template>
             {{ t('watch_later.remove_watched_videos') }}
           </Button>

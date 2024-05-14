@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { Ref } from 'vue'
 import { onMounted, reactive, ref, watch } from 'vue'
+
 import type { FavoriteCategory, FavoriteResource } from '../types'
-import { getUserID, isHomePage, removeHttpFromUrl, smoothScrollToTop } from '~/utils/main'
+import Empty from '~/components/Empty.vue'
+import Loading from '~/components/Loading.vue'
+import { useApiClient } from '~/composables/api'
 import { calcCurrentTime } from '~/utils/dataFormatter'
+import { getUserID, isHomePage, removeHttpFromUrl, smoothScrollToTop } from '~/utils/main'
 
 const api = useApiClient()
 

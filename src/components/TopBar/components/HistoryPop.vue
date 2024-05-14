@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { useDateFormat } from '@vueuse/core'
 import type { Ref } from 'vue'
 import { onMounted, reactive, ref, watch } from 'vue'
-import { useDateFormat } from '@vueuse/core'
-import { isHomePage, removeHttpFromUrl, smoothScrollToTop } from '~/utils/main'
-import { calcCurrentTime } from '~/utils/dataFormatter'
-import { Business } from '~/models/history/history'
+import { useI18n } from 'vue-i18n'
+
+import Empty from '~/components/Empty.vue'
+import Loading from '~/components/Loading.vue'
+import Progress from '~/components/Progress.vue'
+import { useApiClient } from '~/composables/api'
 import type { List as HistoryItem, HistoryResult } from '~/models/history/history'
+import { Business } from '~/models/history/history'
+import { calcCurrentTime } from '~/utils/dataFormatter'
+import { isHomePage, removeHttpFromUrl, smoothScrollToTop } from '~/utils/main'
 
 const { t } = useI18n()
 const api = useApiClient()
@@ -361,7 +366,7 @@ function getHistoryList(type: Business, view_at = 0 as number) {
                     items-center
                     gap-1
                     m="l-2"
-                  ><tabler:live-photo />
+                  ><div i-tabler:live-photo />
                     LIVE
                   </span>
                 </div>
@@ -380,7 +385,7 @@ function getHistoryList(type: Business, view_at = 0 as number) {
 
         <!-- loading -->
         <Transition name="fade">
-          <loading v-if="isLoading && historys.length !== 0" m="-t-4" />
+          <Loading v-if="isLoading && historys.length !== 0" m="-t-4" />
         </Transition>
       </div>
     </main>

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+
 import type { UserInfo, UserStat } from '../types'
+import { useApiClient } from '~/composables/api'
 import { revokeAccessKey } from '~/utils/authProvider'
-import { getCSRF, getUserID, isHomePage } from '~/utils/main'
 import { numFormatter } from '~/utils/dataFormatter'
+import { getCSRF, getUserID, isHomePage } from '~/utils/main'
 
 defineProps<{
   userInfo: UserInfo
@@ -58,7 +60,7 @@ async function logout() {
         leading-none
       >
         <span>{{ userInfo.level_info?.current_level ? userInfo.level_info.current_level : '0' }}</span>
-        <tabler:bolt v-if="userInfo.is_senior_member" />
+        <div v-if="userInfo.is_senior_member" i-tabler:bolt />
       </div>
     </div>
     <div
@@ -119,7 +121,7 @@ async function logout() {
     <div id="other-link">
       <a v-for="item in otherLinks" :key="item.url" :href="item.url" target="_blank">
         {{ item.name }}
-        <tabler:arrow-right />
+        <div i-tabler:arrow-right />
       </a>
       <div id="logout" @click="logout()">
         {{ $t('topbar.user_dropdown.log_out') }}

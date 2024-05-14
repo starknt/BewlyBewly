@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
 import { onMounted, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-// import { isNewArticle, setLastOffsetID, setLastestOffsetID } from '../notify'
-
-import type { TopBarMomentResult } from '~/models/moment/topBarMoment'
+import Empty from '~/components/Empty.vue'
+import Loading from '~/components/Loading.vue'
+import Tooltip from '~/components/Tooltip.vue'
+import { useApiClient } from '~/composables/api'
 import type { TopBarLiveMomentResult } from '~/models/moment/topBarLiveMoment'
+import type { TopBarMomentResult } from '~/models/moment/topBarMoment'
 import { getCSRF, isHomePage, smoothScrollToTop } from '~/utils/main'
 
 type MomentType = 'video' | 'live' | 'article'
@@ -393,7 +395,7 @@ defineExpose({
                     flex="~"
                     items="center"
                   >
-                    <fluent:live-24-filled m="r-2" />
+                    <div i-fluent:live-24-filled m="r-2" />
                     {{ $t('topbar.moments_dropdown.live_status') }}
                   </div>
                 </div>
@@ -418,10 +420,10 @@ defineExpose({
                   @click.prevent="toggleWatchLater(moment.rid || 0)"
                 >
                   <Tooltip v-if="!addedWatchLaterList.includes(moment.rid || 0)" :content="$t('common.save_to_watch_later')" placement="bottom" type="dark">
-                    <mingcute:carplay-line />
+                    <div i-mingcute:carplay-line />
                   </Tooltip>
                   <Tooltip v-else :content="$t('common.added')" placement="bottom" type="dark">
-                    <line-md:confirm />
+                    <div i-line-md:confirm />
                   </Tooltip>
                 </div>
               </div>
@@ -431,7 +433,7 @@ defineExpose({
 
         <!-- loading -->
         <Transition name="fade">
-          <loading v-if="isLoading && moments.length !== 0" m="-t-4" />
+          <Loading v-if="isLoading && moments.length !== 0" m="-t-4" />
         </Transition>
       </div>
     </main>
