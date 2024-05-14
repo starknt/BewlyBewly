@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useElementHover, useEventListener } from '@vueuse/core'
+import Button from '../Button.vue'
 import type { VideoCardProps } from './types'
 import VideoCardSkeleton from './VideoCardSkeleton.vue'
 import { calcTimeSince, numFormatter } from '~/utils/dataFormatter'
@@ -32,6 +33,7 @@ useEventListener(avatarEl, 'mouseleave', () => {
 })
 
 const previewVideoUrl = ref<string>()
+const previewPictureLoaded = ref(false)
 const isInWatchLater = ref(false)
 
 const videoUrl = computed(() => {
@@ -103,8 +105,11 @@ watch(isHoverPreviewEl, (isHover) => {
           <picture draggable="false">
             <source :srcset="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover.avif'" type="image/avif">
             <source :srcset="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover.webp'" type="image/webp">
-            <img :src="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover'" loading="lazy" class="w-full max-w-full min-h-196px align-middle aspect-video" bg="cover center">
+            <img :src="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover'" loading="lazy" class="w-full max-w-full min-h-196px align-middle aspect-video" bg="cover center" @load="previewPictureLoaded = true">
           </picture>
+
+          <!-- preview picture skeleton -->
+          <div v-if="!previewPictureLoaded" pos="absolute top-0 left-0 bottom-0 right-0" bg="$bew-fill-2" />
 
           <!-- preview video -->
           <Transition name="fade">

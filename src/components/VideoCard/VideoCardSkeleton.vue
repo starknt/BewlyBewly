@@ -84,11 +84,7 @@ const wValue = computed((): string => {
 
 <style>
 .video-card__skeleton {
-  overflow: hidden;
-  border-radius: var(--bew-radius);
-  background-repeat: no-repeat;
-  background-position: left -60px top 0;
-  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
+  --at-apply: of-hidden rounded-$bew-radius;
 }
 
 .video-card__skeleton__content {
