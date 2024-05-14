@@ -1,10 +1,12 @@
 <script setup lang="tsx">
-import * as DOMAlign from 'dom-align'
+import { alignPoint } from 'dom-align'
 import { useElementHover } from '@vueuse/core'
 import { useToast } from 'vue-toastification'
+import Button from './Button.vue'
 import type { ProfileCardInfo, ProfileCardInfoResult } from '~/models/user/card'
 import { numFormatter } from '~/utils/dataFormatter'
 import { removeHttpFromUrl } from '~/utils/main'
+import { useApiClient } from '~/composables/api'
 
 enum Action {
   Follow = 1,
@@ -34,7 +36,7 @@ const config: DOMAlignConfig = {
   points: ['cl'],
   offset: [25, 0],
   overflow: { adjustX: true, adjustY: true, alwaysByViewport: true },
-  useCssTransform: false,
+  useCssTransform: true,
 }
 
 const source = document.createElement('div')
@@ -46,41 +48,151 @@ document.body.appendChild(source)
 const api = useApiClient()
 const toast = useToast()
 
-const store = new Map<number, ProfileCardInfo | null>()
-const mid = ref<number>()
-const info = ref<ProfileCardInfo>()
-const isHover = useElementHover(source)
-const queue = ref(new Map<number, number>())
+class OneElement<T> {
+  private element: T | null = null
 
-async function open(_mid: number, t: HTMLElement) {
-  queue.value.clear()
+  has() {
+    return this.element !== null
+  }
 
-  const b = t.getBoundingClientRect()
-  const centerX = b.left + (b.width / 2)
-  const centerY = b.top + (b.height / 2)
-  store.set(_mid, null)
-  const _info = await fetchUserProfile(_mid)
-  info.value = _info
-  mid.value = _mid
-  source.style.display = 'block'
-  DOMAlign.alignPoint(source, { clientX: centerX, clientY: centerY }, config)
+  set(element: T) {
+    this.element = element
+  }
+
+  get() {
+    return this.element
+  }
+
+  clear() {
+    this.element = null
+  }
 }
 
-function close(rid: number) {
-  queue.value.clear()
+interface RequestOpenAction {
+  element: HTMLElement
+  mid: number
+  x: number
+  y: number
+  time: number
+}
 
-  if (queue.value.has(rid))
-    return queue.value.set(rid, Date.now())
+interface RequestCloseAction {
+  element: HTMLElement
+  time?: number
+}
 
-  // create close request
-  setTimeout(() => {
-    queue.value.set(rid, Date.now())
-  }, 1000)
+const DELAY = 1200
+
+const store = new Map<number, ProfileCardInfo | null>()
+const requestOpenActionQueue = new OneElement<RequestOpenAction>()
+const requestCloseActionQueue = new OneElement<RequestCloseAction>()
+
+const queueTimer = ref()
+const info = ref<ProfileCardInfo>()
+const sourceElementRef = ref<HTMLElement>(source)
+const targetElementRef = ref<HTMLElement>()
+const isHoverSourceElement = useElementHover(sourceElementRef)
+const isHoverTargetElement = useElementHover(targetElementRef)
+const isHover = computed(() => {
+  return isHoverSourceElement.value || isHoverTargetElement.value
+})
+
+async function open(mid: number, target: HTMLElement) {
+  if (requestOpenActionQueue.has()) {
+    const action = requestOpenActionQueue.get()!
+
+    if (action.element === target) {
+      return requestOpenActionQueue.set({
+        ...requestOpenActionQueue.get()!,
+        time: Date.now(),
+      })
+    }
+  }
+
+  // placeholder for requestCloseActionQueue
+  requestCloseActionQueue.set({ element: target })
+
+  // currently, only one card can be opened at the same time
+  targetElementRef.value = target
+  isHoverTargetElement.value = true
+
+  const rect = target.getBoundingClientRect()
+  const centerX = rect.left + (rect.width / 2)
+  const centerY = rect.top + (rect.height / 2)
+
+  requestOpenActionQueue.set({
+    element: target,
+    mid,
+    x: centerX,
+    y: centerY,
+    time: Date.now(),
+  })
+}
+
+async function doOpen(x: number, y: number, mid: number) {
+  requestOpenActionQueue.clear()
+  const profile = await fetchUserProfile(mid)
+  info.value = profile
+  source.style.display = 'block'
+  alignPoint(source, { clientX: x, clientY: y }, config)
+}
+
+function close(internal = false) {
+  if (requestCloseActionQueue.has()) {
+    const action = requestCloseActionQueue.get()!
+
+    if (!action.time && !internal) { // clear all action, because the target element is not hovered
+      if (source.style.display !== 'none')
+        close()
+      else
+        doClose()
+    }
+
+    return requestCloseActionQueue.set({
+      ...requestCloseActionQueue.get()!,
+      time: Date.now(),
+    })
+  }
 }
 
 function doClose() {
+  requestOpenActionQueue.clear()
+  requestCloseActionQueue.clear()
   source.style.display = 'none'
 }
+
+onMounted(() => {
+  queueTimer.value = setInterval(() => {
+    const openAction = requestOpenActionQueue.get()
+    if (openAction) {
+      const { mid, time, x, y } = openAction
+      if (Date.now() - time >= DELAY)
+        doOpen(x, y, mid)
+    }
+
+    const closeAction = requestCloseActionQueue.get()
+    if (closeAction && closeAction.time) {
+      const { time, element } = closeAction
+      if (isHover.value) {
+        return requestCloseActionQueue.set({
+          element,
+          time: Date.now(),
+        })
+      }
+
+      if (Date.now() - time >= DELAY) {
+      // 执行关闭动作
+        doClose()
+      }
+    }
+  }, 50)
+})
+
+onUnmounted(() => {
+  clearInterval(queueTimer.value)
+  store.clear()
+  source.remove()
+})
 
 function fetchUserProfile(mid: number) {
   const info = store.get(mid)
@@ -100,9 +212,8 @@ function fetchUserProfile(mid: number) {
     })
 }
 
-function handleSendMessage() {
-  if (mid.value)
-    window.open(`https://message.bilibili.com//#/whisper/mid${mid.value}`, '_blank', 'noopener,noreferrer')
+function handleSendMessage(mid: number | string) {
+  window.open(`https://message.bilibili.com//#/whisper/mid${mid}`, '_blank', 'noopener,noreferrer')
 }
 
 function handleFollow(_info: ProfileCardInfo) {
@@ -127,20 +238,11 @@ function handleFollow(_info: ProfileCardInfo) {
     .catch(() => toast.error('操作失败'))
 }
 
-onUnmounted(() => {
-  source.remove()
-})
+watchEffect(() => {
+  const isHover = isHoverSourceElement.value || isHoverTargetElement.value
 
-watchPostEffect(() => {
-  queue.value.forEach((t, k) => {
-    if (isHover.value)
-      return queue.value.set(k, Date.now())
-
-    if (t + 1000 > Date.now()) {
-      // 执行关闭动作
-      doClose()
-    }
-  })
+  if (!isHover)
+    close(true)
 })
 
 provide('BEWLY_USER_PROFILE', {
@@ -151,59 +253,61 @@ provide('BEWLY_USER_PROFILE', {
 
 <template>
   <div>
-    <Teleport :to="source">
-      <div v-if="info" class="content" flex="~ col">
-        <div class="background" :style="{ backgroundImage: `url(${info.space.l_img})` }" />
+    <Transition name="fade">
+      <Teleport :to="source">
+        <div v-if="info" class="content" flex="~ col">
+          <div class="background" :style="{ backgroundImage: `url(${info.space.l_img})` }" />
 
-        <div flex="~ gap-x-4" class="mt-4">
-          <a :href="`//space.bilibili.com/${info.card.mid}`" class="mt-2 ml-4">
-            <!-- avatar -->
-            <div class="size-48px rounded-full overflow-hidden inline-flex justify-center items-center">
-              <picture class="vertical-middle aspect-video">
-                <source type="image/webp" :srcset="`${removeHttpFromUrl(info.card.face)}` + '@96w_96h_!web-dynamic.webp'">
-                <img :src="`${removeHttpFromUrl(info.card.face)}` + '@96w_96h_!web-dynamic.webp'" loading="lazy">
-              </picture>
-            </div>
-          </a>
+          <div flex="~ gap-x-4" class="mt-4">
+            <a :href="`//space.bilibili.com/${info.card.mid}`" class="mt-2 ml-4">
+              <!-- avatar -->
+              <div class="size-48px rounded-full overflow-hidden inline-flex justify-center items-center">
+                <picture class="vertical-middle aspect-video">
+                  <source type="image/webp" :srcset="`${removeHttpFromUrl(info.card.face)}` + '@96w_96h_!web-dynamic.webp'">
+                  <img :src="`${removeHttpFromUrl(info.card.face)}` + '@96w_96h_!web-dynamic.webp'" loading="lazy">
+                </picture>
+              </div>
+            </a>
 
-          <!-- infomation -->
-          <div flex="~ col">
-            <div class="flex items-center h-21px pb-4">
-              <!-- nickname -->
-              <a :href="`//space.bilibili.com/${info.card.mid}/dynamic`" target="_blank" class="text-base fw-700" style="color: rgb(251, 114, 153);">
-                {{ info.card.name }}
-              </a>
-            </div>
-
-            <div flex="~ col gap-2" class="pr-2">
-              <div flex="~ gap-x-2">
-                <a :href="`//space.bilibili.com/${info.card.mid}/fans/follow`" target="_blank" class="hover:text-$bew-theme-color">
-                  <span class="hover:text-gray">{{ numFormatter(info.card.friend) }}</span> 关注
+            <!-- infomation -->
+            <div flex="~ col">
+              <div class="flex items-center h-21px pb-4">
+                <!-- nickname -->
+                <a :href="`//space.bilibili.com/${info.card.mid}/dynamic`" target="_blank" class="text-base fw-700" style="color: rgb(251, 114, 153);">
+                  {{ info.card.name }}
                 </a>
-                <a :href="`//space.bilibili.com/${info.card.mid}/fans/fans`" target="_blank" class="hover:text-$bew-theme-color">
-                  <span class="hover:text-gray">{{ numFormatter(info.card.fans) }}</span> 粉丝
-                </a>
-                <div class="bili-user-profile-view__info__stat like">
-                  <span>{{ numFormatter(info.like_num) }}</span>获赞
+              </div>
+
+              <div flex="~ col gap-2" class="pr-2">
+                <div flex="~ gap-x-2">
+                  <a :href="`//space.bilibili.com/${info.card.mid}/fans/follow`" target="_blank" class="hover:text-$bew-theme-color">
+                    <span class="hover:text-gray">{{ numFormatter(info.card.friend) }}</span> 关注
+                  </a>
+                  <a :href="`//space.bilibili.com/${info.card.mid}/fans/fans`" target="_blank" class="hover:text-$bew-theme-color">
+                    <span class="hover:text-gray">{{ numFormatter(info.card.fans) }}</span> 粉丝
+                  </a>
+                  <div class="bili-user-profile-view__info__stat like">
+                    <span>{{ numFormatter(info.like_num) }}</span>获赞
+                  </div>
+                </div>
+                <div class="text-sm">
+                  {{ info.card.sign }}
                 </div>
               </div>
-              <div class="text-sm">
-                {{ info.card.sign }}
-              </div>
-            </div>
 
-            <div flex="~ gap-x-6" class="mt-4 pb-4">
-              <Button type="primary" class="w-82px! justify-center" @click="handleFollow(info)">
-                {{ info.following ? '已关注' : '关注' }}
-              </Button>
-              <Button type="warning" class="w-82px! justify-center" @click="handleSendMessage">
-                发消息
-              </Button>
+              <div flex="~ gap-x-6" class="mt-4 pb-4">
+                <Button type="primary" class="w-82px! justify-center" @click="handleFollow(info)">
+                  {{ info.following ? '已关注' : '关注' }}
+                </Button>
+                <Button type="warning" class="w-82px! justify-center" @click="handleSendMessage(info.card.mid)">
+                  发消息
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </Teleport>
+      </Teleport>
+    </Transition>
     <slot />
   </div>
 </template>

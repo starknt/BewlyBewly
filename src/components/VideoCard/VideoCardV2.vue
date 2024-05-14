@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useElementHover, useEventListener } from '@vueuse/core'
 import type { VideoCardProps } from './types'
+import VideoCardSkeleton from './VideoCardSkeleton.vue'
 import { calcTimeSince, numFormatter } from '~/utils/dataFormatter'
 import { getCSRF, removeHttpFromUrl } from '~/utils/main'
 import { settings } from '~/logic'
 import type { VideoPreviewResult } from '~/models/video/videoPreview'
+import { useApiClient } from '~/composables/api'
+import { useProfileCard } from '~/composables/useProfileCard'
 
 const props = withDefaults(defineProps<VideoCardProps>(), {
   topRightContent: true,
@@ -21,14 +24,11 @@ const p = useProfileCard()
 const warperEl = ref<HTMLElement>()
 const previewEl = ref<HTMLElement>()
 const avatarEl = ref<HTMLElement>()
-let rid: number | undefined
 useEventListener(avatarEl, 'mouseenter', () => {
-  if (!rid)
-    rid = useId()
   p.open(props.mid!, avatarEl.value!)
 })
 useEventListener(avatarEl, 'mouseleave', () => {
-  p.close(rid)
+  p.close()
 })
 
 const previewVideoUrl = ref<string>()
@@ -167,11 +167,11 @@ watch(isHoverPreviewEl, (isHover) => {
       <div v-if="!removed" flex="~ gap-x-4" class="p2 pt-0 group">
         <!-- avatar -->
         <a
-          ref="avatarEl"
           :href="authorUrl" target="_blank" rel="noopener noreferrer"
           class="size-36px relative rounded-full object-cover cursor-pointer"
         >
           <img
+            ref="avatarEl"
             :src="`${removeHttpFromUrl(authorFace!)}@50w_50h_1c`"
             class="rounded-full object-cover size-36px"
             loading="lazy"

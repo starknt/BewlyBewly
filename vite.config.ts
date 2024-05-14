@@ -3,15 +3,11 @@
 import { dirname, relative } from 'node:path'
 
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-import replace from '@rollup/plugin-replace'
 import Vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import type { UserConfig } from 'vite'
 import { defineConfig } from 'vite'
-import Icons from 'unplugin-icons/vite'
-import IconsResolver from 'unplugin-icons/resolver'
-import Components from 'unplugin-vue-components/vite'
 import { isDev, isFirefox, port, r } from './scripts/utils'
 
 export const sharedConfig: UserConfig = {

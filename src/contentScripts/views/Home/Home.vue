@@ -2,6 +2,7 @@
 import type { GridLayoutIcon } from './types'
 import { HomeSubPage } from './types'
 import Logo from '~/components/Logo.vue'
+import ProfileCardProvider from '~/components/ProfileCardProvider.vue'
 import SearchBar from '~/components/SearchBar/SearchBar.vue'
 import { useBewlyApp } from '~/composables/useAppProvider'
 import { useBewlyImage } from '~/composables/useImage'

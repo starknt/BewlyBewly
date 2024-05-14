@@ -1,6 +1,6 @@
 interface BewlyProfileCardProvider {
-  open: (mid: number, t: HTMLElement) => void
-  close: (rid?: number) => void
+  open: (mid: number, target: HTMLElement) => void
+  close: () => void
 }
 
 export function useProfileCard(): BewlyProfileCardProvider {
