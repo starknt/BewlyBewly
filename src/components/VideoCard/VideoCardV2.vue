@@ -109,7 +109,7 @@ watch(isHoverPreviewEl, (isHover) => {
           </picture>
 
           <!-- preview picture skeleton -->
-          <div v-if="!previewPictureLoaded" pos="absolute top-0 left-0 bottom-0 right-0" bg="$bew-fill-2" />
+          <div v-if="!previewPictureLoaded" class="animate-pulse" pos="absolute top-0 left-0 bottom-0 right-0" bg="$bew-fill-2" />
 
           <!-- preview video -->
           <Transition name="fade">

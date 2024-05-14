@@ -13,13 +13,9 @@ const wValue = computed((): string => {
 </script>
 
 <template>
-  <div
-    v-if="!horizontal"
-    mb-4 pointer-events-none select-none
-    class="video-card__skeleton"
-  >
-    <div aspect-video bg="$bew-fill-2" />
-    <div flex mt-4 class="video-card__skeleton__content">
+  <div v-if="!horizontal" class="mb-4 pointer-events-none select-none video-card__skeleton">
+    <div class="w-full max-w-full min-h-196px align-middle aspect-video rounded-$bew-radius" bg="$bew-fill-2" />
+    <div class="flex mt-4 video-card__skeleton__content">
       <div
         m="r-4" w="36px" h="36px" rounded="1/2" bg="$bew-fill-2"
         shrink-0
@@ -54,9 +50,7 @@ const wValue = computed((): string => {
     <div hidden w="full" />
 
     <!-- Cover -->
-    <div
-      :w="wValue" shrink-0 aspect-video h-fit bg="$bew-fill-4"
-    />
+    <div class="rounded-$bew-radius shrink-0 aspect-video h-fit" :w="wValue" bg="$bew-fill-4" />
     <!-- Other Information -->
     <div
       w-full mt-0
