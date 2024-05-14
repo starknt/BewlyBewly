@@ -224,7 +224,7 @@ watch(isHoverPreviewEl, (isHover) => {
           <div flex="~ items-center gap-x-.5 wrap">
             <a
               v-if="author"
-              hover="text-$bew-text-1"
+              hover="text-$bew-theme-color"
               flex="~ items-center gap-x-.5"
               class="mr-2 text-sm text-$bew-text-3"
               :href="authorUrl" target="_blank" rel="noopener noreferrer"
