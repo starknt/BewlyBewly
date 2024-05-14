@@ -16,6 +16,10 @@ import { useBewlyApp } from '~/composables/useAppProvider'
 import { useId } from '~/composables/useId'
 import { LanguageType } from '~/enums/appEnums'
 import VideoCardV2 from '~/components/VideoCard/VideoCardV2.vue'
+import Dialog from '~/components/Dialog.vue'
+import Empty from '~/components/Empty.vue'
+import Button from '~/components/Button.vue'
+import Loading from '~/components/Loading.vue'
 
 interface VideoElement {
   id: string
@@ -62,6 +66,9 @@ function getWebVideoProps(item?: WebVideoItem | '<slot />'): VideoCardProps {
   if (!item || item === '<slot />') {
     return {
       horizontal: props.gridLayout === 'oneColumn',
+      id: -1,
+      title: '加载中...',
+      cover: '',
     } as VideoCardProps
   }
 
@@ -92,6 +99,9 @@ function getAppVideoProps(item?: AppVideoItem | '<slot />'): VideoCardProps {
   if (!item || item === '<slot />') {
     return {
       horizontal: props.gridLayout === 'oneColumn',
+      id: -1,
+      title: '加载中...',
+      cover: '',
     } as VideoCardProps
   }
 
