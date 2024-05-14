@@ -81,7 +81,7 @@ interface RequestCloseAction {
   time?: number
 }
 
-const DELAY = 1200
+const DELAY = 1000
 
 const store = new Map<number, ProfileCardInfo | null>()
 const requestOpenActionQueue = new OneElement<RequestOpenAction>()
@@ -181,7 +181,7 @@ onMounted(() => {
       }
 
       if (Date.now() - time >= DELAY) {
-      // 执行关闭动作
+        // 执行关闭动作
         doClose()
       }
     }
@@ -238,12 +238,7 @@ function handleFollow(_info: ProfileCardInfo) {
     .catch(() => toast.error('操作失败'))
 }
 
-watchEffect(() => {
-  const isHover = isHoverSourceElement.value || isHoverTargetElement.value
-
-  if (!isHover)
-    close(true)
-})
+watch(isHover, isHover => !isHover && close(true))
 
 provide('BEWLY_USER_PROFILE', {
   open,
@@ -314,7 +309,7 @@ provide('BEWLY_USER_PROFILE', {
 
 <style>
 #bewly-user-profile {
-  font-size: 13px;
+  font-size: 12px;
   width: 366px;
 
   --at-apply: antialiased text-$text3;
