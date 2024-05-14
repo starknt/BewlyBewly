@@ -16,21 +16,17 @@ const wValue = computed((): string => {
   <div v-if="!horizontal" class="mb-4 pointer-events-none select-none video-card__skeleton">
     <div class="w-full max-w-full min-h-196px align-middle aspect-video rounded-$bew-radius" bg="$bew-fill-2" />
     <div class="flex mt-4 video-card__skeleton__content">
-      <div
-        m="r-4" w="36px" h="36px" rounded="1/2" bg="$bew-fill-2"
-        shrink-0
-      />
+      <div class="size-36px mr-4 rounded-50% bg-$bew-fill-2 shrink-0" />
       <div w-full>
         <div grid gap-2>
           <div w-full h-5 bg="$bew-fill-3" />
           <div w="3/4" h-5 bg="$bew-fill-3" />
         </div>
         <div grid gap-2 mt-2>
-          <div w="40%" h-4 bg="$bew-fill-2" />
           <div w="80%" h-4 bg="$bew-fill-2" />
         </div>
         <div
-          text="transparent sm" inline-block mt-4 p="x-2" h-7
+          text="transparent sm" inline-block mt-2 p="x-2" h-7
           bg="$bew-fill-1" rounded-4
         >
           hello world
@@ -60,7 +56,6 @@ const wValue = computed((): string => {
       <div w-full>
         <div grid gap-2>
           <div w="5/6" h-5 bg="$bew-fill-3" />
-          <div w="3/4" h-5 bg="$bew-fill-3" />
         </div>
 
         <div mt-4 flex>
