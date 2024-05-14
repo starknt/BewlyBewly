@@ -18,10 +18,14 @@ const wValue = computed((): string => {
     <div class="flex mt-4 video-card__skeleton__content">
       <div class="size-36px mr-4 rounded-50% bg-$bew-fill-2 shrink-0" />
       <div w-full>
-        <div grid gap-2>
-          <div w-full h-5 bg="$bew-fill-3" />
-          <div w="3/4" h-5 bg="$bew-fill-3" />
-        </div>
+        <h3
+          class="flex-1 min-h-[calc(((1rem*1.75)-1em)*2+1em*2)] keep-two-lines cursor-pointer"
+          text="lg overflow-ellipsis $bew-text-1"
+          hover="text-$bew-theme-color"
+          bg="$bew-fill-3"
+          animate-pulse
+        />
+
         <div grid gap-2 mt-2>
           <div w="80%" h-4 bg="$bew-fill-2" />
         </div>

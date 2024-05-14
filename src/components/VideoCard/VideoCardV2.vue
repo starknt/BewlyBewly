@@ -169,7 +169,7 @@ watch(isHoverPreviewEl, (isHover) => {
       </a>
 
       <!-- video card infomation -->
-      <div v-if="!removed" flex="~ gap-x-4" class="p2 pt-0 group">
+      <div v-if="!removed" flex="~ gap-x-4" class="p2 group">
         <!-- avatar -->
         <a
           :href="authorUrl" target="_blank" rel="noopener noreferrer"
