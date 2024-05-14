@@ -2,8 +2,8 @@
 import type { Ref } from 'vue'
 
 import Loading from '~/components/Loading.vue'
-import VideoCard from '~/components/VideoCard/VideoCard.vue'
 import VideoCardSkeleton from '~/components/VideoCard/VideoCardSkeleton.vue'
+import VideoCardV2 from '~/components/VideoCard/VideoCardV2.vue'
 import { useApiClient } from '~/composables/api'
 import { useBewlyApp } from '~/composables/useAppProvider'
 import type { GridLayout } from '~/logic'

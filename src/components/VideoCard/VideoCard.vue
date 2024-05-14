@@ -3,6 +3,9 @@ import Tooltip from '../Tooltip.vue'
 import type { VideoCardProps } from './types'
 import { getCSRF, removeHttpFromUrl } from '~/utils/main'
 import { calcCurrentTime, calcTimeSince, numFormatter } from '~/utils/dataFormatter'
+import { settings } from '~/logic'
+import { useApiClient } from '~/composables/api'
+import type { VideoPreviewResult } from '~/models/video/videoPreview'
 
 const props = withDefaults(defineProps<VideoCardProps>(), {
   topRightContent: true,

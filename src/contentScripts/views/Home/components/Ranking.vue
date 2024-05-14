@@ -5,7 +5,6 @@ import type { RankingType } from '../types'
 import LongCoverCard from '~/components/LongCoverCard/LongCoverCard.vue'
 import LongCoverCardSkeleton from '~/components/LongCoverCard/LongCoverCardSkeleton.vue'
 import OverlayScrollbarsComponent from '~/components/OverlayScrollbarsComponent'
-import VideoCard from '~/components/VideoCard/VideoCard.vue'
 import VideoCardSkeleton from '~/components/VideoCard/VideoCardSkeleton.vue'
 import { useApiClient } from '~/composables/api'
 import { useBewlyApp } from '~/composables/useAppProvider'
@@ -14,6 +13,7 @@ import { settings } from '~/logic'
 import type { RankingResult, List as RankingVideoItem } from '~/models/video/ranking'
 import type { List as RankingPgcItem, RankingPgcResult } from '~/models/video/rankingPgc'
 import emitter from '~/utils/mitt'
+import VideoCardV2 from '~/components/VideoCard/VideoCardV2.vue'
 
 const props = defineProps<{
   gridLayout: GridLayout
