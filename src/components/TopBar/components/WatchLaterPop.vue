@@ -56,7 +56,7 @@ function getAllWatchLaterList() {
     bg="$bew-elevated-solid-1"
     rounded="$bew-radius"
     pos="relative"
-    of="hidden"
+    of="hidden!"
   >
     <!-- top bar -->
     <header

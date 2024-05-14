@@ -19,7 +19,8 @@ const wValue = computed((): string => {
       <div class="size-36px mr-4 rounded-50% bg-$bew-fill-2 shrink-0" />
       <div w-full>
         <h3
-          class="flex-1 min-h-[calc(((1rem*1.75)-1em)*2+1em*2)] keep-two-lines cursor-pointer"
+          class="flex-1 keep-two-lines cursor-pointer"
+          min-h="[calc(((1rem*1.75)-1em)*2+1em*2)]"
           text="lg overflow-ellipsis $bew-text-1"
           hover="text-$bew-theme-color"
           bg="$bew-fill-3"
