@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-
 import Button from '~/components/Button.vue'
 import Empty from '~/components/Empty.vue'
 import Input from '~/components/Input.vue'
@@ -352,4 +351,3 @@ function isMusic(item: FavoriteResource) {
   }
 }
 </style>
-~/components/TopBar/types

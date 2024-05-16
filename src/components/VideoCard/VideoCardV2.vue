@@ -34,6 +34,7 @@ useEventListener(avatarEl, 'mouseleave', () => {
 
 const previewVideoUrl = ref<string>()
 const previewPictureLoaded = ref(false)
+const avatarPictureLoaded = ref(false)
 const isInWatchLater = ref(false)
 
 const videoUrl = computed(() => {
@@ -97,15 +98,23 @@ watch(isHoverPreviewEl, (isHover) => {
 
 <template>
   <div ref="warperEl" class="video-card-wrapper of-hidden rounded-$bew-radius" style="content-visibility: auto;">
+    <div hidden w="xl:280px lg:250px md:200px 200px" />
+
     <!-- bewly video card -->
-    <div v-if="!skeleton" flex="~ col gap-y-2" class="bewly-video-card">
+    <div v-if="!skeleton" class="bewly-video-card" :class="horizontal ? 'flex-row gap-x-2' : 'flex-col gap-y-2'">
       <!-- video card cover -->
       <a :href="videoUrl" target="_blank" rel="noopener noreferrer" :draggable="!showPreviewVideo">
         <div ref="previewEl" class="group relative of-hidden rounded-$bew-radius" flex="~ justify-center items-center">
           <picture draggable="false">
             <source :srcset="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover.avif'" type="image/avif">
             <source :srcset="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover.webp'" type="image/webp">
-            <img :src="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover'" loading="lazy" class="w-full max-w-full min-h-196px align-middle aspect-video" bg="cover center" @load="previewPictureLoaded = true">
+            <img
+              :class="{ 'max-h-196px w-full': horizontal }"
+              :src="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover'" loading="lazy"
+              class="w-full min-h-196px align-middle aspect-video"
+              bg="cover center"
+              @load="previewPictureLoaded = true"
+            >
           </picture>
 
           <!-- preview picture skeleton -->
@@ -169,18 +178,24 @@ watch(isHoverPreviewEl, (isHover) => {
       </a>
 
       <!-- video card infomation -->
-      <div v-if="!removed" flex="~ gap-x-4" class="p2 group">
+      <div v-if="!removed" flex="~ gap-x-4" class="h-full p2 group">
         <!-- avatar -->
         <a
           :href="authorUrl" target="_blank" rel="noopener noreferrer"
-          class="size-36px relative rounded-full object-cover cursor-pointer"
+          class="size-36px relative rounded-full of-hidden shrink-0"
         >
+          <!-- avatar -->
           <img
             ref="avatarEl"
             :src="`${removeHttpFromUrl(authorFace!)}@50w_50h_1c`"
-            class="rounded-full object-cover size-36px"
+            class="object-cover size-36px"
             loading="lazy"
+            @load="avatarPictureLoaded = true"
           >
+
+          <!-- avatar skeleton -->
+          <div v-if="!avatarPictureLoaded" class="animate-pulse size-36px" pos="absolute top-0 left-0 bottom-0 right-0" bg="$bew-fill-2" />
+
           <div
             v-if="followed"
             class="size-14px rounded-full"
@@ -192,7 +207,7 @@ watch(isHoverPreviewEl, (isHover) => {
           </div>
         </a>
 
-        <div flex="~ col gap-y-2" class="w-full">
+        <div flex="~ col gap-y-2" class="w-full h-full" :class="{ 'justify-between': horizontal }">
           <!-- header -->
           <div class="w-full flex gap-x-2">
             <!-- title -->
@@ -275,12 +290,13 @@ watch(isHoverPreviewEl, (isHover) => {
     </div>
 
     <!-- skeleton -->
-    <VideoCardSkeleton v-if="skeleton" />
+    <VideoCardSkeleton v-if="skeleton" :horizontal />
   </div>
 </template>
 
 <style>
 .bewly-video-card {
+  --at-apply: flex;
   --at-apply: transition-shadow duration-500;
   /* --at-apply: shadow-[0_5px_10px_0_rgba(0,0,0,0.15)]; */
 }

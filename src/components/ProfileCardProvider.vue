@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { alignPoint } from 'dom-align'
-import { useElementHover } from '@vueuse/core'
+import { useElementHover, useRafFn } from '@vueuse/core'
 import { useToast } from 'vue-toastification'
 import Button from './Button.vue'
 import type { ProfileCardInfo, ProfileCardInfoResult } from '~/models/user/card'
@@ -87,7 +87,6 @@ const store = new Map<number, ProfileCardInfo | null>()
 const requestOpenActionQueue = new OneElement<RequestOpenAction>()
 const requestCloseActionQueue = new OneElement<RequestCloseAction>()
 
-const queueTimer = ref()
 const info = ref<ProfileCardInfo>()
 const sourceElementRef = ref<HTMLElement>(source)
 const targetElementRef = ref<HTMLElement>()
@@ -162,7 +161,7 @@ function doClose() {
 }
 
 onMounted(() => {
-  queueTimer.value = setInterval(() => {
+  useRafFn(() => {
     const openAction = requestOpenActionQueue.get()
     if (openAction) {
       const { mid, time, x, y } = openAction
@@ -180,16 +179,13 @@ onMounted(() => {
         })
       }
 
-      if (Date.now() - time >= DELAY) {
-        // 执行关闭动作
+      if (Date.now() - time >= DELAY)
         doClose()
-      }
     }
-  }, 50)
+  })
 })
 
 onUnmounted(() => {
-  clearInterval(queueTimer.value)
   store.clear()
   source.remove()
 })
