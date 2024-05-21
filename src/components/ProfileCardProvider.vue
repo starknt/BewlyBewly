@@ -81,7 +81,8 @@ interface RequestCloseAction {
   time?: number
 }
 
-const DELAY = 1000
+const ENTER_DELAY = 1500
+const EXIT_DELAY = 1000
 
 const store = new Map<number, ProfileCardInfo | null>()
 const requestOpenActionQueue = new OneElement<RequestOpenAction>()
@@ -102,7 +103,7 @@ async function open(mid: number, target: HTMLElement) {
 
     if (action.element === target) {
       return requestOpenActionQueue.set({
-        ...requestOpenActionQueue.get()!,
+        ...action,
         time: Date.now(),
       })
     }
@@ -148,7 +149,7 @@ function close(internal = false) {
     }
 
     return requestCloseActionQueue.set({
-      ...requestCloseActionQueue.get()!,
+      ...action!,
       time: Date.now(),
     })
   }
@@ -165,7 +166,7 @@ onMounted(() => {
     const openAction = requestOpenActionQueue.get()
     if (openAction) {
       const { mid, time, x, y } = openAction
-      if (Date.now() - time >= DELAY)
+      if (Date.now() - time >= ENTER_DELAY)
         doOpen(x, y, mid)
     }
 
@@ -179,10 +180,10 @@ onMounted(() => {
         })
       }
 
-      if (Date.now() - time >= DELAY)
+      if (Date.now() - time >= EXIT_DELAY)
         doClose()
     }
-  })
+  }, { fpsLimit: 30 })
 })
 
 onUnmounted(() => {
