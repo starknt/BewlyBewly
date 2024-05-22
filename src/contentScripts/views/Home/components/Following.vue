@@ -22,10 +22,10 @@ const emit = defineEmits<{
 
 const gridValue = computed((): string => {
   if (props.gridLayout === 'adaptive')
-    return '~ 2xl:cols-5 xl:cols-4 lg:cols-3 md:cols-2 gap-6'
+    return '~ 2xl:cols-5 xl:cols-4 lg:cols-3 md:cols-2 gap-4'
   if (props.gridLayout === 'twoColumns')
     return '~ cols-1 sm:cols-2 lg:cols-3 xl:cols-4 gap-4'
-  return '~ cols-1 gap-4'
+  return '~ cols-1 sm:cols-2 gap-4'
 })
 const api = useApiClient()
 

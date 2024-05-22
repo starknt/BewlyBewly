@@ -123,7 +123,7 @@ watch(isHoverPreviewEl, (isHover) => {
 
           <!-- preview picture skeleton -->
           <div
-            :class="previewPictureLoaded ? 'z-1 opacity-0 pointer-events-none' : 'z-2 opacity-100'"
+            :class="previewPictureLoaded ? 'z-1 opacity-0 pointer-events-none animate-none' : 'z-2 opacity-100'"
             class="transition-opacity duration-1000 animate-pulse"
             pos="absolute top-0 left-0 bottom-0 right-0"
             bg="$bew-fill-2"
