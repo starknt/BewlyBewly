@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useElementHover, useEventListener } from '@vueuse/core'
+import browser from 'webextension-polyfill'
 import Button from '../Button.vue'
 import type { VideoCardProps } from './types'
 import VideoCardSkeleton from './VideoCardSkeleton.vue'
@@ -100,12 +101,15 @@ watch(isHoverPreviewEl, (isHover) => {
   <div ref="warperEl" class="video-card-wrapper of-hidden rounded-$bew-radius" style="content-visibility: auto;">
     <div hidden w="xl:280px lg:250px md:200px 200px" />
 
+    <!-- skeleton -->
+    <VideoCardSkeleton :style="{ contentVisibility: skeleton ? 'auto' : 'hidden' }" :horizontal />
+
     <!-- bewly video card -->
     <div v-if="!skeleton" class="bewly-video-card" :class="horizontal ? 'flex-row gap-x-2' : 'flex-col gap-y-2'">
       <!-- video card cover -->
       <a :href="videoUrl" target="_blank" rel="noopener noreferrer" :draggable="!showPreviewVideo">
         <div ref="previewEl" class="group relative of-hidden rounded-$bew-radius" flex="~ justify-center items-center">
-          <picture draggable="false">
+          <picture draggable="false" class="transition-opacity duration-1000" :style="{ opacity: previewPictureLoaded ? '1' : '0' }">
             <source :srcset="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover.avif'" type="image/avif">
             <source :srcset="`${removeHttpFromUrl(cover)}` + '@672w_378h_1c_!web-home-common-cover.webp'" type="image/webp">
             <img
@@ -118,7 +122,21 @@ watch(isHoverPreviewEl, (isHover) => {
           </picture>
 
           <!-- preview picture skeleton -->
-          <div v-if="!previewPictureLoaded" class="animate-pulse" pos="absolute top-0 left-0 bottom-0 right-0" bg="$bew-fill-2" />
+          <div
+            :class="previewPictureLoaded ? 'z-1 opacity-0 pointer-events-none' : 'z-2 opacity-100'"
+            class="transition-opacity duration-1000 animate-pulse"
+            pos="absolute top-0 left-0 bottom-0 right-0"
+            bg="$bew-fill-2"
+          >
+            <picture>
+              <img
+                :src="browser.runtime.getURL('/assets/placeholder.png')"
+                loading="eager"
+                class="w-full min-h-196px align-middle aspect-video"
+                bg="cover center"
+              >
+            </picture>
+          </div>
 
           <!-- preview video -->
           <Transition name="fade">
@@ -288,9 +306,6 @@ watch(isHoverPreviewEl, (isHover) => {
         </div>
       </div>
     </div>
-
-    <!-- skeleton -->
-    <VideoCardSkeleton v-if="skeleton" :horizontal />
   </div>
 </template>
 

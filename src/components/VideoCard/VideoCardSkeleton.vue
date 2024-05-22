@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import browser from 'webextension-polyfill'
+
 const props = defineProps<{
   horizontal?: boolean
   hasTag?: boolean
@@ -13,8 +15,16 @@ const wValue = computed((): string => {
 </script>
 
 <template>
-  <div v-if="!horizontal" class="mb-4 pointer-events-none select-none video-card__skeleton">
-    <div class="w-full max-w-full min-h-196px align-middle aspect-video rounded-$bew-radius" bg="$bew-fill-2" />
+  <div v-if="!horizontal" class="pointer-events-none select-none video-card__skeleton">
+    <div class="group relative of-hidden rounded-$bew-radius" flex="~ justify-center items-center">
+      <img
+        :class="{ 'max-h-196px w-full': horizontal }"
+        :src="browser.runtime.getURL('/assets/placeholder.png')"
+        loading="eager"
+        class="w-full min-h-196px align-middle aspect-video"
+        bg="cover center"
+      >
+    </div>
     <div class="flex mt-4 video-card__skeleton__content">
       <div class="size-36px mr-4 rounded-50% bg-$bew-fill-2 shrink-0" />
       <div w-full>

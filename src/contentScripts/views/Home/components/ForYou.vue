@@ -564,7 +564,7 @@ watch(() => settings.value.recommendationMode, (mode, oldMode) => {
       ref="containerRef"
       if="!needToLoginFirst"
       m="b-0 t-0" relative w-full h-full
-      pb-4 gap-4
+      pb-4
       :grid="gridValue"
     >
       <VideoCardV2 v-for="video in videos" v-bind="video.props" :key="video.key" @more-click="video.moreClick" @undo="video.undo" />
