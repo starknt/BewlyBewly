@@ -80,6 +80,7 @@ settings:
   block_ads: 封鎖廣告
   disable_frosted_glass: 停用毛玻璃效果
   reduce_frosted_glass_blur: 降低毛玻璃模糊強度
+  use_old_topbar: 使用舊版頂欄
   auto_hide_topbar: 自動隱藏頂欄
   topbar_icon_badges: 圖示標記樣式
   topbar_icon_badges_opt:
@@ -154,7 +155,6 @@ settings:
   home_tabs_adjustment: 標籤欄調整
   home_tabs_adjustment_desc: 第一個啟用的標籤項目調整頁面將是起始頁面
   always_show_tabs_on_home_page: 總是顯示首頁標籤欄
-  always_show_the_top_bar_logo: 永遠顯示頂欄 Logo
 
   # Compatibility
   # Common
@@ -169,6 +169,10 @@ settings:
   follow_bilibili_evolved_color_desc: 每次變更 Bilibili Evolved 主題色後，記得重新選取此選項以更新配置
 
   # About
+  links: 連結
+  sponsor: 贊助
+  sponsor_desc: 喜歡這份專案並希望看到它蓬勃發展嗎？請考慮贊助它！您的支持是此專案發展的動力。
+  afdian: 爱发电
   import_settings: 匯入設定
   export_settings: 匯出設定
   export_settings_desc: 一些敏感性資訊，例如 access key，可能需要重新取得
@@ -241,6 +245,10 @@ topbar:
     paid_courses: 付費課堂
     community: 社群中心
     music_plus: 新歌熱榜
+    game_center: 遊戲中心
+    comic_con_and_goods: 動漫節與周邊
+    manga: 漫畫
+    game_competitions: 遊戲賽事
   user_dropdown:
     money: 硬幣：
     b_coins: B幣：
@@ -248,7 +256,7 @@ topbar:
     following: 追蹤中
     followers: 粉絲
     posts: 動態
-    accout_settings: 帳戶資訊
+    account_settings: 帳戶設定
     uploads_manager: 內容管理
     b_coins_wallet: B幣錢包
     orders: 訂單資訊

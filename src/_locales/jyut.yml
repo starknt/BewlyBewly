@@ -80,6 +80,7 @@ settings:
   block_ads: 封鎖廣告
   disable_frosted_glass: 閂咗毛玻璃效果
   reduce_frosted_glass_blur: 降低毛玻璃模糊強度
+  use_old_topbar: 用返舊版頂欄
   auto_hide_topbar: 自動收埋頂欄
   topbar_icon_badges: 圖示邊位標記
   topbar_icon_badges_opt:
@@ -154,7 +155,6 @@ settings:
   home_tabs_adjustment: 分頁欄調整
   home_tabs_adjustment_desc: 第一個啓用嘅分頁項目會係開始頁面
   always_show_tabs_on_home_page: 永遠顯示主頁分頁欄
-  always_show_the_top_bar_logo: 永遠顯示頂欄 Logo
 
   # Compatibility
   # Common
@@ -169,6 +169,10 @@ settings:
   topbar_visibility_desc: 用於兼容 Bilibili Evolved 客製化頂欄
 
   # About
+  links: 拎
+  sponsor: 贊助
+  sponsor_desc: 鍾意呢份專案又想佢愈做愈好？可以考慮贊助吓！你嘅支持就係呢份專案發展嘅動力。
+  afdian: 愛發電
   import_settings: 匯入設定
   export_settings: 匯出設定
   export_settings_desc: 一啲敏感性資訊，例如 access key，可能要你重新攞過
@@ -241,6 +245,10 @@ topbar:
     paid_courses: 付費課堂
     community: 社羣中心
     music_plus: 新歌熱榜
+    game_center: 遊戲中心
+    comic_con_and_goods: 動漫節同周邊
+    manga: 漫畫
+    game_competitions: 遊戲賽事
   user_dropdown:
     money: 銀仔：
     b_coins: B銀：
@@ -248,7 +256,7 @@ topbar:
     following: 追緊
     followers: 擁躉
     posts: 動向
-    accout_settings: 帳戶資料
+    account_settings: 帳戶設定
     uploads_manager: 內容管理
     b_coins_wallet: B銀荷包
     orders: 訂單資訊

@@ -16,6 +16,7 @@ export interface Settings {
   enableVideoPreview: boolean
   enableVideoCtrlBarOnVideoCard: boolean
   hoverVideoCardDelayed: boolean
+  useOldTopBar: boolean
   autoHideTopBar: boolean
   topBarIconBadges: 'number' | 'dot' | 'none'
   blockAds: boolean
@@ -59,7 +60,6 @@ export interface Settings {
   alwaysShowTabsOnHomePage: boolean
   useSearchPageModeOnHomePage: boolean
   searchPageModeWallpaperFixed: boolean
-  alwaysShowTheTopBarLogoOnSearchPageMode: boolean
 
   adaptToOtherPageStyles: boolean
   showTopBar: boolean
@@ -73,6 +73,7 @@ export const settings = useStorageLocal('settings', ref<Settings>({
   enableVideoPreview: true,
   enableVideoCtrlBarOnVideoCard: false,
   hoverVideoCardDelayed: false,
+  useOldTopBar: false,
   autoHideTopBar: false,
   topBarIconBadges: 'number',
   dockPosition: 'right',
@@ -117,7 +118,6 @@ export const settings = useStorageLocal('settings', ref<Settings>({
   alwaysShowTabsOnHomePage: false,
   useSearchPageModeOnHomePage: false,
   searchPageModeWallpaperFixed: false,
-  alwaysShowTheTopBarLogoOnSearchPageMode: false,
 
   adaptToOtherPageStyles: true,
   showTopBar: true,

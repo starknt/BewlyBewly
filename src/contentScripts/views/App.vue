@@ -10,12 +10,15 @@ import Dock from '~/components/Dock/Dock.vue'
 import OverlayScrollbarsComponent from '~/components/OverlayScrollbarsComponent'
 import RightSideButtons from '~/components/RightSideButtons/RightSideButtons.vue'
 import Settings from '~/components/Settings/Settings.vue'
+import OldTopBar from '~/components/TopBar/OldTopBar.vue'
 import TopBar from '~/components/TopBar/TopBar.vue'
 import type { BewlyAppProvider } from '~/composables/useAppProvider'
 import { useDark } from '~/composables/useDark'
+import { OVERLAY_SCROLL_BAR_SCROLL } from '~/constants/globalEvents'
 import { AppPage, LanguageType } from '~/enums/appEnums'
 import { accessKey, settings } from '~/logic'
 import { getUserID, hexToRGBA, isHomePage, scrollToTop } from '~/utils/main'
+import emitter from '~/utils/mitt'
 
 const { isDark } = useDark()
 const activatedPage = ref<AppPage>(settings.value.dockItemVisibilityList.find(e => e.visible === true)?.page ?? AppPage.Home)
@@ -31,7 +34,6 @@ const pages = {
 }
 const mainAppRef = ref<HTMLElement>() as Ref<HTMLElement>
 const scrollbarRef = ref()
-const showTopBarMask = ref<boolean>(false)
 const handlePageRefresh = ref<() => void>()
 const handleReachBottom = ref<() => void>()
 const handleThrottledPageRefresh = useThrottleFn(() => handlePageRefresh.value?.(), 500)
@@ -39,31 +41,6 @@ const handleThrottledReachBottom = useThrottleFn(() => handleReachBottom.value?.
 const handleThrottledBackToTop = useThrottleFn(() => handleBackToTop(), 1000)
 const topBarRef = ref()
 const reachTop = ref<boolean>(true)
-
-const isSearchPage = computed(() => {
-  if (/https?:\/\/search.bilibili.com\/.*$/.test(location.href))
-    return true
-  return false
-})
-
-const isTopBarFixed = computed(() => {
-  if (
-    isHomePage()
-    // video page
-    || /https?:\/\/(?:www.)?bilibili.com\/(?:video|list)\/.*/.test(location.href)
-    // anime playback & movie page
-    || /https?:\/\/(?:www.)?bilibili.com\/bangumi\/play\/.*/.test(location.href)
-    // moment page
-    || /https?:\/\/t.bilibili.com.*/.test(location.href)
-    // channel, anime, chinese anime, tv shows, movie, variety shows, mooc
-    || /https?:\/\/(?:www.)?bilibili.com\/(?:v|anime|guochuang|tv|movie|variety|mooc).*/.test(location.href)
-    // articles page
-    || /https?:\/\/(?:www.)?bilibili.com\/read\/home.*/.test(location.href)
-  ) {
-    return true
-  }
-  return false
-})
 
 watch(
   () => activatedPage.value,
@@ -122,8 +99,9 @@ onMounted(() => {
 
   document.addEventListener('scroll', () => {
     if (window.scrollY > 0)
-      showTopBarMask.value = true
-    else showTopBarMask.value = false
+      reachTop.value = false
+    else
+      reachTop.value = true
   })
 
   handleChangeAccessKey()
@@ -202,16 +180,16 @@ function handleAdaptToOtherPageStylesChange() {
 }
 
 function handleOsScroll() {
+  emitter.emit(OVERLAY_SCROLL_BAR_SCROLL)
+
   const osInstance = scrollbarRef.value?.osInstance()
   const { viewport } = osInstance.elements()
   const { scrollTop, scrollHeight, clientHeight } = viewport // get scroll offset
 
   if (scrollTop === 0) {
-    showTopBarMask.value = false
     reachTop.value = true
   }
   else {
-    showTopBarMask.value = true
     reachTop.value = false
   }
 
@@ -264,20 +242,6 @@ function handleReduceFrostedGlassBlur() {
     document.documentElement.classList.remove('reduce-frosted-glass-blur')
   }
 }
-
-// fix #166 https://github.com/hakadao/BewlyBewly/issues/166
-// function openVideoPageIfBvidExists() {
-// Assume the URL is https://www.bilibili.com/?bvid=BV1be41127ft&spm_id_from=333.788.seo.out
-
-//   // Get the current URL's query string
-//   const queryString = window.location.search
-//   // Create a URLSearchParams instance
-//   const urlParams = new URLSearchParams(queryString)
-//   const bvid = urlParams.get('bvid')
-
-//   if (bvid)
-//     window.open(`https://www.bilibili.com/video/${bvid}`, '_self')
-// }
 
 /**
  * Checks if the current viewport has a scrollbar.
@@ -340,33 +304,14 @@ provide<BewlyAppProvider>('BEWLY_APP', {
 
     <!-- TopBar -->
     <div m-auto max-w="$bew-page-max-width">
-      <Transition name="top-bar">
-        <TopBar
-          v-if="settings.showTopBar && !isHomePage()"
-          pos="top-0 left-0" z="99 hover:1001" w-full
-          :style="{ position: isTopBarFixed ? 'fixed' : 'absolute' }"
-          :show-search-bar="!isSearchPage"
-          :mask="showTopBarMask"
-        />
-        <TopBar
-          v-else-if="settings.showTopBar && isHomePage()"
-          ref="topBarRef"
-          :show-search-bar="showTopBarMask && settings.useSearchPageModeOnHomePage
-            || (
-              !settings.useSearchPageModeOnHomePage && activatedPage !== AppPage.Search
-              || activatedPage !== AppPage.Home && activatedPage !== AppPage.Search
-            )
-            || settings.useOriginalBilibiliHomepage"
-          :show-logo="settings.alwaysShowTheTopBarLogoOnSearchPageMode
-            || (
-              showTopBarMask && settings.useSearchPageModeOnHomePage
-              || (!settings.useSearchPageModeOnHomePage || activatedPage !== AppPage.Home)
-              || settings.useOriginalBilibiliHomepage
-            )"
-          :mask="showTopBarMask"
-          pos="fixed top-0 left-0" z="99 hover:1001" w-full
-        />
-      </Transition>
+      <OldTopBar
+        v-if="settings.useOldTopBar"
+        pos="top-0 left-0" z="99 hover:1001" w-full
+      />
+      <TopBar
+        v-else
+        pos="top-0 left-0" z="99 hover:1001" w-full
+      />
     </div>
 
     <div
@@ -399,16 +344,6 @@ provide<BewlyAppProvider>('BEWLY_APP', {
 </template>
 
 <style lang="scss" scoped>
-.top-bar-enter-active,
-.top-bar-leave-active {
-  transition: all 0.5s ease;
-}
-
-.top-bar-enter-from,
-.top-bar-leave-to {
-  --uno: "opacity-0 transform -translate-y-full";
-}
-
 .bewly-wrapper {
   --uno: "text-size-$bew-base-font-size";
 

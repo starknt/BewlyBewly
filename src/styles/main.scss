@@ -57,6 +57,7 @@ html.dark.bewly-design {
   line-break: anywhere;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .bewly-design {
@@ -84,6 +85,11 @@ img {
     background-position: center;
     background-repeat: no-repeat;
   }
+}
+
+// Prevent the scrollbar from being covered by the other elements
+.os-scrollbar {
+  --uno: "z-100000";
 }
 
 // Change OverlayScrollbar color

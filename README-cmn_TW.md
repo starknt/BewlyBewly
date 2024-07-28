@@ -13,26 +13,14 @@
 
 ## 👋 介紹
 
+> [!NOTE]
+> BewlyBewly 主要著重於頁面調整和改良，而不是完善功能和提升效率。
+>
+> 由於考慮到效率和維護困難度，深色模式只會適應常用的頁面，而較少使用的頁面則不會支護。
+
 BewlyBewly 是一個針對 BiliBili 的瀏覽器擴充功能，旨在透過重新設計 BiliBili 的介面來提升用戶體驗。設計靈感來自於 YouTube、Vision OS 和 iOS，使介面更具視覺吸引力和用戶友好性。
 
 該專案使用 [vitesse-webext](https://github.com/antfu/vitesse-webext) 範例進行開發。如果沒有此範例，可能無法開發出此專案。
-
-## 🔨 Build (Firefox)
-
-Please make sure you have [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/) installed locally, and it is recommended to use [Visual Studio Code](https://code.visualstudio.com/) for development.
-
-1. To build the extension, run
-
-```bash
-# Install dependencies
-pnpm install
-
-pnpm build-firefox
-```
-
-2. Load the generated `extension-firefox/` folder in the browser, The extension will then take effect on [www.bilibili.com](https://www.bilibili.com).
-
-[Chrome & Edge](/docs/CONTRIBUTING.md#building-chrome-or-edge)
 
 ## ⬇️ 安裝
 
@@ -87,13 +75,13 @@ pnpm build-firefox
 
 </details>
 
-## 🤝 貢獻
+## 🤝 貢獻與建置專案
 
-詳情 [CONTRIBUTION.md](docs/CONTRIBUTING.md)
+詳情 [CONTRIBUTING.md](docs/CONTRIBUTING-cmn_TW.md)
 
 ### 貢獻者
 
-![Contributors](https://contrib.rocks/image?repo=hakadao/BewlyBewly)
+[![Contributors](https://contrib.rocks/image?repo=hakadao/BewlyBewly)](https://github.com/BewlyBewly/BewlyBewly/graphs/contributors)
 
 ## ❤️ 鳴謝
 
