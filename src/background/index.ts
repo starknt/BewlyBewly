@@ -38,7 +38,32 @@ if (process.env.FIREFOX) {
     { urls: ['<all_urls>'] },
     ['blocking', 'requestHeaders'],
   )
+
+  // Block all scripts and styles files
+  browser.webRequest.onBeforeRequest.addListener(
+    (details) => {
+      if (!details.documentUrl?.startsWith('https://www.bilibili.com/') || details.documentUrl?.startsWith('https://www.bilibili.com/video')) {
+        return { cancel: false }
+      }
+
+      // ignore document requests
+      if (details.type === 'main_frame' || details.type === 'sub_frame')
+        return { cancel: false }
+      // ignore extension requests
+      if (details.type === 'script' && details.url.startsWith(browser.runtime.getURL('')))
+        return { cancel: false }
+      if (details.url.includes(`#${browser.runtime.id}`)) {
+        return { cancel: false }
+      }
+      if (details.type !== 'xmlhttprequest')
+        return { cancel: true }
+    },
+    { urls: ['<all_urls>'] },
+    ['blocking'],
+  )
 }
+
+// Block all scripts file
 
 // Setup all message listeners
 setupApiMsgLstnrs()

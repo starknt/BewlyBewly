@@ -27,6 +27,8 @@ import WatchLaterPop from './components/WatchLaterPop.vue'
 import { updateInterval } from './notify'
 import type { UnReadDm, UnReadMessage, UserInfo } from './types'
 
+const id = browser.runtime.id
+
 // import { useTopBarStore } from '~/stores/topBarStore'
 
 // const popups = { NotificationsPop, MomentsPop, FavoritesPop, HistoryPop }
@@ -610,7 +612,7 @@ defineExpose({
               important-w-auto
             >
               <a href="https://passport.bilibili.com/login" class="login">
-                <div i-solar:user-circle-bold-duotone class="text-xl mr-2" />{{
+                <div i-solar:user-circle-bold-duotone class="mr-2 text-xl" />{{
                   $t('topbar.sign_in')
                 }}
               </a>
@@ -767,7 +769,7 @@ defineExpose({
               <!-- More -->
               <div
                 ref="more"
-                class="right-side-item lg:!hidden flex"
+                class="lg:!hidden right-side-item flex"
                 :class="{ active: popupVisible.more }"
                 @click="event => handleClickTopBarItem(event, 'more')"
               >
@@ -873,7 +875,7 @@ defineExpose({
               v-if="isLogin"
               ref="avatar"
               :class="{ hover: popupVisible.userPanel }"
-              class="avatar right-side-item"
+              class="right-side-item avatar"
               @click="event => handleClickTopBarItem(event, 'userPanel')"
             >
               <ALink
@@ -886,7 +888,7 @@ defineExpose({
                   backgroundImage: `url(${`${userInfo.face}`.replace(
                     'http:',
                     '',
-                  )})`,
+                  )}#${id})`,
                 }"
               />
               <div
@@ -897,7 +899,7 @@ defineExpose({
                   backgroundImage: `url(${`${userInfo.face}`.replace(
                     'http:',
                     '',
-                  )})`,
+                  )}#${id})`,
                 }"
               />
               <svg

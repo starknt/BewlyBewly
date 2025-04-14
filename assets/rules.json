@@ -48,5 +48,16 @@
       "resourceTypes": ["xmlhttprequest"],
       "requestMethods": ["post"]
     }
+  },
+  {
+    "id": 3,
+    "priority": 2,
+    "condition": {
+      "resourceTypes": ["script"],
+      "initiatorDomains": "www.bilibili.com"
+    },
+    "action": {
+      "type": "block"
+    }
   }
 ]
